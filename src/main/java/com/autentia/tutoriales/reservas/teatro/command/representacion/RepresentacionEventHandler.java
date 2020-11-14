@@ -6,7 +6,7 @@ import com.autentia.tutoriales.reservas.teatro.repository.Repository;
 
 import java.util.UUID;
 
-public class RepresentacionEventHandler implements EventHandler<UUID> {
+public class RepresentacionEventHandler implements EventHandler {
 
     private final Repository<Representacion, UUID> repository;
 
@@ -15,11 +15,12 @@ public class RepresentacionEventHandler implements EventHandler<UUID> {
     }
 
     @Override
-    public void apply(final long version, final Event<UUID> event) {
-        final var representacion = repository.load(event.getRootId()).orElseThrow();
-        representacion.setVersion(version);
+    public void apply(final long version, final Event event) {
         if (event instanceof ButacasSeleccionadasEvent) {
             final var butacasSeleccionadasEvent = (ButacasSeleccionadasEvent) event;
+            final var representacion = repository.load(butacasSeleccionadasEvent.getRootId()).orElseThrow();
+
+            representacion.setVersion(version);
             representacion.getButacasLibres().removeAll(butacasSeleccionadasEvent.getButacas());
         }
     }

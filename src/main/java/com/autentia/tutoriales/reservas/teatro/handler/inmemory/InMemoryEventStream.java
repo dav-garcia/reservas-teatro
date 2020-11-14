@@ -7,13 +7,13 @@ import com.autentia.tutoriales.reservas.teatro.handler.EventStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InMemoryEventStream<T> implements EventStream<T> {
+public class InMemoryEventStream implements EventStream {
 
-    private final EventHandler<T> eventHandler;
-    private final List<Event<T>> pastEvents;
+    private final EventHandler eventHandler;
+    private final List<Event> pastEvents;
     private long latestVersion;
 
-    public InMemoryEventStream(final EventHandler<T> eventHandler) {
+    public InMemoryEventStream(final EventHandler eventHandler) {
         this.eventHandler = eventHandler;
         pastEvents = new ArrayList<>();
         latestVersion = 0;
@@ -25,7 +25,7 @@ public class InMemoryEventStream<T> implements EventStream<T> {
     }
 
     @Override
-    public boolean tryPublish(final long currentVersion, final List<Event<T>> events) {
+    public boolean tryPublish(final long currentVersion, final List<Event> events) {
         if (currentVersion == latestVersion) {
             pastEvents.addAll(events);
             events.forEach(e -> eventHandler.apply(++latestVersion, e));

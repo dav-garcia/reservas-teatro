@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro;
 
-public interface Event<T> {
+public interface Event {
 
-    T getRootId();
+    Object getRootId();
 }

@@ -5,9 +5,9 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
-public interface EventStream<T> {
+public interface EventStream {
 
     @NonNull
     long getLatestVersion();
-    boolean tryPublish(final long currentVersion, final List<Event<T>> events);
+    boolean tryPublish(final long currentVersion, final List<Event> events);
 }

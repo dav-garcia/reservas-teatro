@@ -15,6 +15,7 @@ public class SynchronizedCommandDispatcher implements CommandDispatcher {
     }
 
     @Override
+    @SuppressWarnings("java:S3740")
     public synchronized <T extends AggregateRoot<?>> void dispatch(final Command<T> command, final T root) {
         if (command.isValid(root)) {
             final var streamId = new EventStreamId(root.getClass(), root.getId());

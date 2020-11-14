@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro;
 
-public interface EventHandler<T> {
+public interface EventHandler {
 
-    void apply(final long version, final Event<T> event);
+    void apply(final long version, final Event event);
 }

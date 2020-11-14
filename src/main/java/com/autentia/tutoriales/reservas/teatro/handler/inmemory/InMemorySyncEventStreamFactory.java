@@ -20,7 +20,7 @@ public class InMemorySyncEventStreamFactory implements EventStreamFactory {
         eventStreams = new HashMap<>();
     }
 
-    public void putEventHandler(final Class<? extends AggregateRoot<?>> type, final EventHandler<?> eventHandler) {
+    public void putEventHandler(final Class<? extends AggregateRoot<?>> type, final EventHandler eventHandler) {
         eventHandlerRegistry.put(type, eventHandler);
     }
 
@@ -29,7 +29,7 @@ public class InMemorySyncEventStreamFactory implements EventStreamFactory {
     }
 
     @Override
-    public <T> EventStream<T> getForRoot(EventStreamId<T> id) {
+    public EventStream getForRoot(EventStreamId<?> id) {
         return eventStreams.computeIfAbsent(id, i -> {
             final var eventHandler = Optional.ofNullable(eventHandlerRegistry.get(i.getType()))
                     .orElseThrow(() -> new RuntimeException("No handler registered for type " + i.getType()));
