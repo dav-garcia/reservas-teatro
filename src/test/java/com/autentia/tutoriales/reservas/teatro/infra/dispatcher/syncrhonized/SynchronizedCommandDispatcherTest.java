@@ -34,7 +34,7 @@ public class SynchronizedCommandDispatcherTest {
 
     @BeforeClass
     public static void setup() {
-        FACTORY.putEventHandler(Representacion.class, new RepresentacionEventHandler(REPOSITORY));
+        FACTORY.subscribeToType(Representacion.class, new RepresentacionEventHandler(REPOSITORY));
     }
 
     @Test

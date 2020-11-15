@@ -21,7 +21,7 @@ public class SynchronizedCommandDispatcher implements CommandDispatcher {
     public synchronized <T extends AggregateRoot<?>> void dispatch(final Command<T> command, final T root) {
         if (command.isValid(root)) {
             final var streamId = new EventStreamId(root.getClass(), root.getId());
-            final var stream = eventStreamFactory.getForRoot(streamId);
+            final var stream = eventStreamFactory.getForAggregateRoot(streamId);
             final long currentVersion = root.getVersion();
             final long latestVersion = stream.getLatestVersion();
 
