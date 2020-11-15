@@ -4,19 +4,22 @@ import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.NoSideEffectsCommand;
 import lombok.Value;
 
+import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Value
-public class SeleccionarButacasCommand implements NoSideEffectsCommand<Representacion> {
+public class CrearRepresentacionCommand implements NoSideEffectsCommand<Representacion> {
 
-    Set<Butaca> butacas;
+    ZonedDateTime cuando;
+    Sala donde;
 
+    @Override
     public boolean isValid(Representacion root) {
-        return root.getButacasLibres().containsAll(butacas);
+        return true;
     }
 
+    @Override
     public List<Event> execute(Representacion root) {
-        return List.of(new ButacasSeleccionadasEvent(root.getId(), butacas));
+        return List.of(new RepresentacionCreadaEvent(root.getId(), cuando, donde));
     }
 }

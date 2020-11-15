@@ -1,34 +1,36 @@
-package com.autentia.tutoriales.reservas.teatro.command;
+package com.autentia.tutoriales.reservas.teatro.infra.dispatcher.syncrhonized;
 
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
+import com.autentia.tutoriales.reservas.teatro.command.representacion.CrearRepresentacionCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Representacion;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.RepresentacionEventHandler;
+import com.autentia.tutoriales.reservas.teatro.command.representacion.Sala;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.SeleccionarButacasCommand;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatcher.CommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.dispatcher.syncrhonized.SynchronizedCommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.handler.inmemory.InMemorySyncEventStreamFactory;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.List;
+import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SeleccionarButacasCommandTest {
+public class SynchronizedCommandDispatcherTest {
 
     private static final Butaca A1 = new Butaca("A", 1);
     private static final Butaca A3 = new Butaca("A", 3);
     private static final Butaca A5 = new Butaca("A", 5);
     private static final Butaca B1 = new Butaca("B", 1);
+    private static final Sala SALA = new Sala("SALA", Set.of(A1, A3, A5, B1));
 
     private static final Repository<Representacion, UUID> REPOSITORY = new InMemoryRepository<>();
     private static final InMemorySyncEventStreamFactory FACTORY = new InMemorySyncEventStreamFactory();
-    private static final CommandDispatcher DISPATCHER = new SynchronizedCommandDispatcher(FACTORY);
+
+    private static final CommandDispatcher SUT = new SynchronizedCommandDispatcher(FACTORY);
 
     @BeforeClass
     public static void setup() {
@@ -36,18 +38,15 @@ public class SeleccionarButacasCommandTest {
     }
 
     @Test
-    public void givenSeleccionarButacasThenButacasSeleccionadas() {
-        final var butacasLibres = new HashSet<>(List.of(A1, A3, A5, B1)); // Modificable
-        final var butacasReserva = Set.of(A1, A3);
-        final var root = Representacion.builder()
-                .id(UUID.randomUUID())
-                .butacasLibres(butacasLibres)
-                .build();
-        final var command = new SeleccionarButacasCommand(butacasReserva);
+    public void givenComandosValidosThenProyectaEventos() {
+        final var id = UUID.randomUUID();
+        final var command1 = new CrearRepresentacionCommand(ZonedDateTime.now(), SALA);
+        final var command2 = new SeleccionarButacasCommand(Set.of(A1, A3));
 
-        REPOSITORY.create(root);
-        DISPATCHER.dispatch(command, root);
+        SUT.dispatch(command1, Representacion.builder().id(id).build());
+        SUT.dispatch(command2, REPOSITORY.load(id).orElseThrow());
 
-        assertThat(root.getButacasLibres()).containsExactlyInAnyOrder(A5, B1);
+        final var result = REPOSITORY.load(id).orElseThrow();
+        assertThat(result.getButacasLibres()).containsExactlyInAnyOrder(A5, B1);
     }
 }
