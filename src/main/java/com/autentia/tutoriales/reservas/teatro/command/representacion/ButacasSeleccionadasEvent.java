@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
-import com.autentia.tutoriales.reservas.teatro.Event;
+import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import lombok.Value;
 
 import java.util.Set;

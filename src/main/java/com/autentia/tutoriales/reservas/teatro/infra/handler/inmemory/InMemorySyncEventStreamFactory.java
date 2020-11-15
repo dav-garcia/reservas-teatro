@@ -1,10 +1,10 @@
-package com.autentia.tutoriales.reservas.teatro.handler.inmemory;
+package com.autentia.tutoriales.reservas.teatro.infra.handler.inmemory;
 
-import com.autentia.tutoriales.reservas.teatro.AggregateRoot;
-import com.autentia.tutoriales.reservas.teatro.EventHandler;
-import com.autentia.tutoriales.reservas.teatro.handler.EventStream;
-import com.autentia.tutoriales.reservas.teatro.handler.EventStreamFactory;
-import com.autentia.tutoriales.reservas.teatro.handler.EventStreamId;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.EventHandler;
+import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStream;
+import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamId;
 
 import java.util.HashMap;
 import java.util.Map;

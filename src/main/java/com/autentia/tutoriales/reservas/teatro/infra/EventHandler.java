@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro;
+package com.autentia.tutoriales.reservas.teatro.infra;
 
 public interface EventHandler {
 

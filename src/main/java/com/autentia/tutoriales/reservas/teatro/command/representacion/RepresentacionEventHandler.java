@@ -1,8 +1,8 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
-import com.autentia.tutoriales.reservas.teatro.Event;
-import com.autentia.tutoriales.reservas.teatro.EventHandler;
-import com.autentia.tutoriales.reservas.teatro.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.Event;
+import com.autentia.tutoriales.reservas.teatro.infra.EventHandler;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
 import java.util.UUID;
 

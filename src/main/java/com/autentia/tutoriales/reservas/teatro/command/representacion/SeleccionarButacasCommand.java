@@ -1,7 +1,7 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
-import com.autentia.tutoriales.reservas.teatro.Command;
-import com.autentia.tutoriales.reservas.teatro.Event;
+import com.autentia.tutoriales.reservas.teatro.infra.Command;
+import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import lombok.Value;
 
 import java.util.List;
@@ -16,7 +16,6 @@ public class SeleccionarButacasCommand implements Command<Representacion> {
         return root.getButacasLibres().containsAll(butacas);
     }
 
-    @SuppressWarnings("java:S1172")
     public List<Event> execute(Representacion root) {
         return List.of(new ButacasSeleccionadasEvent(root.getId(), butacas));
     }

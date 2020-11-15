@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.handler;
+package com.autentia.tutoriales.reservas.teatro.infra.handler;
 
 import org.springframework.lang.NonNull;
 

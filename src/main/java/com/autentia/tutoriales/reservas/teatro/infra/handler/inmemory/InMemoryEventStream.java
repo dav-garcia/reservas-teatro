@@ -1,8 +1,8 @@
-package com.autentia.tutoriales.reservas.teatro.handler.inmemory;
+package com.autentia.tutoriales.reservas.teatro.infra.handler.inmemory;
 
-import com.autentia.tutoriales.reservas.teatro.Event;
-import com.autentia.tutoriales.reservas.teatro.EventHandler;
-import com.autentia.tutoriales.reservas.teatro.handler.EventStream;
+import com.autentia.tutoriales.reservas.teatro.infra.Event;
+import com.autentia.tutoriales.reservas.teatro.infra.EventHandler;
+import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStream;
 
 import java.util.ArrayList;
 import java.util.List;

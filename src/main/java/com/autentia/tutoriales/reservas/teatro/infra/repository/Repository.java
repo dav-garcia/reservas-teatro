@@ -1,6 +1,6 @@
-package com.autentia.tutoriales.reservas.teatro.repository;
+package com.autentia.tutoriales.reservas.teatro.infra.repository;
 
-import com.autentia.tutoriales.reservas.teatro.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
 import org.springframework.lang.NonNull;
 
 import java.util.Optional;

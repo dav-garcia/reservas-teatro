@@ -1,7 +1,7 @@
-package com.autentia.tutoriales.reservas.teatro.repository.inmemory;
+package com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory;
 
-import com.autentia.tutoriales.reservas.teatro.AggregateRoot;
-import com.autentia.tutoriales.reservas.teatro.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
 import java.util.HashMap;
 import java.util.Map;

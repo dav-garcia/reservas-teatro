@@ -4,11 +4,11 @@ import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Representacion;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.RepresentacionEventHandler;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.SeleccionarButacasCommand;
-import com.autentia.tutoriales.reservas.teatro.dispatcher.CommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.dispatcher.syncrhonized.SynchronizedCommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.handler.inmemory.InMemorySyncEventStreamFactory;
-import com.autentia.tutoriales.reservas.teatro.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.repository.inmemory.InMemoryRepository;
+import com.autentia.tutoriales.reservas.teatro.infra.dispatcher.CommandDispatcher;
+import com.autentia.tutoriales.reservas.teatro.infra.dispatcher.syncrhonized.SynchronizedCommandDispatcher;
+import com.autentia.tutoriales.reservas.teatro.infra.handler.inmemory.InMemorySyncEventStreamFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class SeleccionarButacasCommandTest {
     }
 
     @Test
-    public void givenValidCommandThenPublishEvents() {
+    public void givenSeleccionarButacasThenButacasSeleccionadas() {
         final var butacasLibres = new HashSet<>(List.of(A1, A3, A5, B1)); // Modificable
         final var butacasReserva = Set.of(A1, A3);
         final var root = Representacion.builder()

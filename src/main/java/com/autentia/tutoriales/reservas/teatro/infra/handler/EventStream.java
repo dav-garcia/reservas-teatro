@@ -1,6 +1,6 @@
-package com.autentia.tutoriales.reservas.teatro.handler;
+package com.autentia.tutoriales.reservas.teatro.infra.handler;
 
-import com.autentia.tutoriales.reservas.teatro.Event;
+import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import org.springframework.lang.NonNull;
 
 import java.util.List;

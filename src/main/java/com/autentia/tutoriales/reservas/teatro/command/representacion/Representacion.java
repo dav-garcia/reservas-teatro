@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
-import com.autentia.tutoriales.reservas.teatro.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
