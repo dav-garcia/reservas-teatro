@@ -16,10 +16,10 @@ import java.util.UUID;
 @Builder(builderClassName = "Builder")
 public class Representacion implements AggregateRoot<UUID> {
 
-    private UUID id;
+    private final UUID id;
     @Setter
     private long version;
-    private ZonedDateTime cuando;
-    private Sala donde;
-    private Set<Butaca> butacasLibres;
+    private final ZonedDateTime cuando;
+    private final Sala donde;
+    private final Set<Butaca> butacasLibres;
 }

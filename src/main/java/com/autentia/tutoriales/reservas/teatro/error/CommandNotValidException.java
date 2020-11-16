@@ -2,12 +2,11 @@ package com.autentia.tutoriales.reservas.teatro.error;
 
 public class CommandNotValidException extends CommandException {
 
-    public CommandNotValidException(String message) {
+    public CommandNotValidException(final String message) {
         super(message);
     }
 
-
-    public CommandNotValidException(String message, Throwable cause) {
+    public CommandNotValidException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

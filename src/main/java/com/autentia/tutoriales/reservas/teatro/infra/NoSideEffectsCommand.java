@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.infra;
 
-public interface NoSideEffectsCommand<T extends AggregateRoot<?>> extends Command<T> {
+public interface NoSideEffectsCommand<T extends AggregateRoot<U>, U> extends Command<T, U> {
 
     default void committed(final T root) {
         // Do nothing

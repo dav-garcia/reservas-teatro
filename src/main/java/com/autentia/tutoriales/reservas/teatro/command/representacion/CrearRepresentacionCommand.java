@@ -6,9 +6,10 @@ import lombok.Value;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Value
-public class CrearRepresentacionCommand implements NoSideEffectsCommand<Representacion> {
+public class CrearRepresentacionCommand implements NoSideEffectsCommand<Representacion, UUID> {
 
     ZonedDateTime cuando;
     Sala donde;
@@ -19,7 +20,7 @@ public class CrearRepresentacionCommand implements NoSideEffectsCommand<Represen
     }
 
     @Override
-    public List<Event> execute(Representacion root) {
+    public List<Event<Representacion, UUID>> execute(Representacion root) {
         return List.of(new RepresentacionCreadaEvent(root.getId(), cuando, donde));
     }
 }

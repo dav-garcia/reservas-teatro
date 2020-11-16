@@ -2,11 +2,11 @@ package com.autentia.tutoriales.reservas.teatro.error;
 
 public class CommandException extends RuntimeException {
 
-    public CommandException(String message) {
+    public CommandException(final String message) {
         super(message);
     }
 
-    public CommandException(String message, Throwable cause) {
+    public CommandException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

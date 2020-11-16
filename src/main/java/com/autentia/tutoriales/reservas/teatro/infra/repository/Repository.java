@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface Repository<T extends AggregateRoot<U>, U> {
 
     @NonNull
-    U create(final T root);
+    T create(final U id);
     @NonNull
     Optional<T> load(final U id);
-    void update(final T root);
+    void save(final T root);
     void delete(final U id);
 }

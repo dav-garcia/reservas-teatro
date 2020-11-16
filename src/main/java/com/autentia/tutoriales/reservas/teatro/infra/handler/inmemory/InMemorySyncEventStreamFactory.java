@@ -1,36 +1,32 @@
 package com.autentia.tutoriales.reservas.teatro.infra.handler.inmemory;
 
 import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
-import com.autentia.tutoriales.reservas.teatro.infra.EventHandler;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRootRegistry;
+import com.autentia.tutoriales.reservas.teatro.infra.EventSourceId;
 import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStream;
 import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamFactory;
-import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamId;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class InMemorySyncEventStreamFactory implements EventStreamFactory {
 
-    private final Map<Class<? extends AggregateRoot<?>>, EventHandler> eventHandlerRegistry;
-    private final Map<EventStreamId<?>, InMemoryEventStream> eventStreams;
+    private final AggregateRootRegistry registry;
+    private final Map<EventSourceId<?, ?>, InMemoryEventStream<?, ?>> eventStreams;
 
     public InMemorySyncEventStreamFactory() {
-        eventHandlerRegistry = new HashMap<>();
+        registry = new AggregateRootRegistry();
         eventStreams = new HashMap<>();
     }
 
     @Override
-    public EventStream getForAggregateRoot(EventStreamId<?> id) {
-        return eventStreams.computeIfAbsent(id, i -> {
-            final var eventHandler = Optional.ofNullable(eventHandlerRegistry.get(i.getType()))
-                    .orElseThrow(() -> new RuntimeException("No handler registered for type " + i.getType()));
-            return new InMemoryEventStream(eventHandler);
-        });
+    public <T extends AggregateRoot<U>, U> void registerAggregateRoot(Class<T> type, Repository<T, U> repository) {
+        registry.register(type, repository);
     }
 
     @Override
-    public void subscribeToType(final Class<? extends AggregateRoot<?>> type, final EventHandler eventHandler) {
-        eventHandlerRegistry.put(type, eventHandler);
+    public <T extends AggregateRoot<U>, U> EventStream<T, U> get(EventSourceId<T, U> id) {
+        return (EventStream<T, U>) eventStreams.computeIfAbsent(id, i -> new InMemoryEventStream<>(registry, id));
     }
 }

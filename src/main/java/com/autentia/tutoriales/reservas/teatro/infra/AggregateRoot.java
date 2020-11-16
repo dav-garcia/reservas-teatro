@@ -7,4 +7,5 @@ public interface AggregateRoot<T> {
     @NonNull
     T getId();
     long getVersion();
+    void setVersion(final long version);
 }

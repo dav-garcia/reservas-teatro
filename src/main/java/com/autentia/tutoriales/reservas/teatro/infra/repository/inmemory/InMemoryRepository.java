@@ -6,37 +6,31 @@ import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class InMemoryRepository<T extends AggregateRoot<U>, U> implements Repository<T, U> {
 
+    private final Function<U, T> newInstance;
     private final Map<U, T> instances;
 
-    public InMemoryRepository() {
+    public InMemoryRepository(Function<U, T> newInstance) {
+        this.newInstance = newInstance;
         instances = new HashMap<>();
     }
 
     @Override
-    public U create(final T root) {
-        if (instances.containsKey(root.getId())) {
-            throw new IllegalStateException(
-                    String.format("Instance %s of type %s already created", root.getId(), root.getClass().getSimpleName()));
-        }
+    public T create(final U id) {
+        return newInstance.apply(id);
+    }
+
+    @Override
+    public void save(T root) {
         instances.put(root.getId(), root);
-        return root.getId();
     }
 
     @Override
     public Optional<T> load(U id) {
         return Optional.ofNullable(instances.get(id));
-    }
-
-    @Override
-    public void update(T root) {
-        if (!instances.containsKey(root.getId())) {
-            throw new IllegalStateException(
-                    String.format("Instance %s of type %s does not exist", root.getId(), root.getClass().getSimpleName()));
-        }
-        instances.put(root.getId(), root);
     }
 
     @Override

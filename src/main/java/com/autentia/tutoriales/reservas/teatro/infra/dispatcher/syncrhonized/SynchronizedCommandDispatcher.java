@@ -3,25 +3,33 @@ package com.autentia.tutoriales.reservas.teatro.infra.dispatcher.syncrhonized;
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
 import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRootRegistry;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
+import com.autentia.tutoriales.reservas.teatro.infra.EventSourceId;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatcher.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamFactory;
-import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamId;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
 public class SynchronizedCommandDispatcher implements CommandDispatcher {
 
     private final EventStreamFactory eventStreamFactory;
+    private final AggregateRootRegistry registry;
 
     public SynchronizedCommandDispatcher(final EventStreamFactory eventStreamFactory) {
         this.eventStreamFactory = eventStreamFactory;
+        registry = new AggregateRootRegistry();
     }
 
     @Override
-    @SuppressWarnings("java:S3740")
-    public synchronized <T extends AggregateRoot<?>> void dispatch(final Command<T> command, final T root) {
+    public <T extends AggregateRoot<U>, U> void registerAggregateRoot(Class<T> type, Repository<T, U> repository) {
+        registry.register(type, repository);
+    }
+
+    @Override
+    public synchronized <T extends AggregateRoot<U>, U> void dispatch(final Command<T, U> command, final EventSourceId<T, U> id) {
+        final var root = registry.getAggregateRoot(id);
         if (command.isValid(root)) {
-            final var streamId = new EventStreamId(root.getClass(), root.getId());
-            final var stream = eventStreamFactory.getForAggregateRoot(streamId);
+            final var stream = eventStreamFactory.get(id);
             final long currentVersion = root.getVersion();
             final long latestVersion = stream.getLatestVersion();
 
@@ -48,7 +56,7 @@ public class SynchronizedCommandDispatcher implements CommandDispatcher {
     private String buildName(final Object object) {
         String result = object.getClass().getSimpleName();
         if (object instanceof AggregateRoot) {
-            final var root = (AggregateRoot) object;
+            final var root = (AggregateRoot<?>) object;
             result += String.format("[%s@%d]", root.getId(), root.getVersion());
         }
         return result;
