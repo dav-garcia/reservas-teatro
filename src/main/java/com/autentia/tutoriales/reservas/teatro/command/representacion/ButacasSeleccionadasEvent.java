@@ -10,12 +10,11 @@ import java.util.UUID;
 @Value
 public class ButacasSeleccionadasEvent implements Event<Representacion, UUID> {
 
-    UUID rootId;
     Set<Butaca> butacas;
 
     @Override
-    public void apply(final Repository<Representacion, UUID> repository, final long version) {
-        final var representacion = repository.load(rootId).orElseThrow();
+    public void apply(final UUID id, final long version, final Repository<Representacion, UUID> repository) {
+        final var representacion = repository.load(id).orElseThrow();
 
         representacion.setVersion(version);
         representacion.getButacasLibres().removeAll(butacas);

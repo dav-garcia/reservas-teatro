@@ -1,11 +1,11 @@
-package com.autentia.tutoriales.reservas.teatro.infra.handler.inmemory;
+package com.autentia.tutoriales.reservas.teatro.infra.stream.inmemory;
 
 import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
 import com.autentia.tutoriales.reservas.teatro.infra.AggregateRootRegistry;
 import com.autentia.tutoriales.reservas.teatro.infra.EventSourceId;
-import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStream;
-import com.autentia.tutoriales.reservas.teatro.infra.handler.EventStreamFactory;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.stream.EventStream;
+import com.autentia.tutoriales.reservas.teatro.infra.stream.EventStreamFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class InMemorySyncEventStreamFactory implements EventStreamFactory {
     }
 
     @Override
-    public <T extends AggregateRoot<U>, U> EventStream<T, U> get(EventSourceId<T, U> id) {
+    public <T extends AggregateRoot<U>, U> EventStream<T, U> getEventStream(EventSourceId<T, U> id) {
         return (EventStream<T, U>) eventStreams.computeIfAbsent(id, i -> new InMemoryEventStream<>(registry, id));
     }
 }

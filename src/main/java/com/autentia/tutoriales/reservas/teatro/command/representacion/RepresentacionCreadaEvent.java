@@ -11,14 +11,13 @@ import java.util.UUID;
 @Value
 public class RepresentacionCreadaEvent implements Event<Representacion, UUID> {
 
-    UUID rootId;
     ZonedDateTime cuando;
     Sala donde;
 
     @Override
-    public void apply(final Repository<Representacion, UUID> repository, final long version) {
+    public void apply(final UUID id, final long version, final Repository<Representacion, UUID> repository) {
         final var representacion = Representacion.builder()
-                .id(rootId)
+                .id(id)
                 .version(version)
                 .cuando(cuando)
                 .donde(donde)
