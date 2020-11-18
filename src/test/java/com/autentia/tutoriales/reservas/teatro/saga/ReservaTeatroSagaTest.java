@@ -21,8 +21,10 @@ import org.junit.Test;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class ReservaTeatroSagaTest {
 
@@ -45,7 +47,7 @@ public class ReservaTeatroSagaTest {
 
     private static final CommandDispatcher<Representacion, UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_REPOSITORY, REPRESENTACION_PUBLISHER);
     private static final CommandDispatcher<Reserva, UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_REPOSITORY, RESERVA_PUBLISHER);
-    private static final CommandDispatcher<Cliente, String> CLIENTE_DISPATCHER = new OccCommandDispatcher<Cliente, String>(CLIENTE_REPOSITORY, CLIENTE_PUBLISHER);
+    private static final CommandDispatcher<Cliente, String> CLIENTE_DISPATCHER = new OccCommandDispatcher<>(CLIENTE_REPOSITORY, CLIENTE_PUBLISHER);
 
     private static final RepresentacionEventConsumer REPRESENTACION_CONSUMER = new RepresentacionEventConsumer(REPRESENTACION_REPOSITORY);
     private static final ReservaEventConsumer RESERVA_CONSUMER = new ReservaEventConsumer(RESERVA_REPOSITORY);
@@ -84,5 +86,21 @@ public class ReservaTeatroSagaTest {
         assertThat(reserva.getVersion()).isEqualTo(1L);
         assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A3, B5);
         assertThat(reserva.getCliente()).isEqualTo(EMAIL);
+    }
+
+    @Test
+    public void givenSeleccionarButacasWhenTimeoutThenReservaCancelada() {
+        SUT.setTimeout(1);
+        try {
+            final var idRepresentacion = UUID.randomUUID();
+
+            REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
+            REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A3, B5), EMAIL));
+
+            await().atMost(2, TimeUnit.SECONDS).until(() ->
+                    RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(idRepresentacion)).isEmpty());
+        } finally {
+            SUT.setTimeout(null);
+        }
     }
 }

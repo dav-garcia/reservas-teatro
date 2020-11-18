@@ -18,6 +18,8 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
     public void consume(final long version, final Event<UUID> event) {
         if (event instanceof ReservaCreadaEvent) {
             apply(version, (ReservaCreadaEvent) event);
+        } else if (event instanceof ReservaCanceladaEvent) {
+            apply(version, (ReservaCanceladaEvent) event);
         }
     }
 
@@ -31,5 +33,10 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
                 .build();
 
         repository.save(reserva);
+    }
+
+    @SuppressWarnings("java:S1172")
+    private void apply(final long version, final ReservaCanceladaEvent event) {
+        repository.delete(event.getAggregateRootId());
     }
 }

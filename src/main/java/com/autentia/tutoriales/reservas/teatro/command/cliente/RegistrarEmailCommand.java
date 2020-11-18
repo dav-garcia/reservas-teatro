@@ -1,6 +1,5 @@
 package com.autentia.tutoriales.reservas.teatro.command.cliente;
 
-import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
@@ -13,10 +12,8 @@ public class RegistrarEmailCommand implements Command<Cliente, String> {
 
     @Override
     public void execute(Repository<Cliente, String> repository, EventPublisher<String> eventPublisher) {
-        if (repository.load(aggregateRootId).isPresent()) {
-            throw new CommandNotValidException("Email ya registrado");
+        if (repository.load(aggregateRootId).isEmpty()) {
+            eventPublisher.tryPublish(0L, new EmailRegistradoEvent(aggregateRootId));
         }
-
-        eventPublisher.tryPublish(0L, new EmailRegistradoEvent(aggregateRootId));
     }
 }
