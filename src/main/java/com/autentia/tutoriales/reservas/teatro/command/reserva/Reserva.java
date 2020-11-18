@@ -21,4 +21,5 @@ public class Reserva implements AggregateRoot<UUID> {
     private long version;
     private final UUID representacion;
     private final Set<Butaca> butacas;
+    private final String cliente;
 }

@@ -14,6 +14,7 @@ public class SeleccionarButacasCommand implements Command<Representacion, UUID> 
 
     UUID aggregateRootId;
     Set<Butaca> butacas;
+    String email;
 
     @Override
     public void execute(final Repository<Representacion, UUID> repository, final EventPublisher<UUID> eventPublisher) {
@@ -21,6 +22,6 @@ public class SeleccionarButacasCommand implements Command<Representacion, UUID> 
                 .filter(r -> r.getButacasLibres().containsAll(butacas))
                 .orElseThrow(() -> new CommandNotValidException("Representación no existe o las butacas no están libres"));
 
-        eventPublisher.tryPublish(representacion.getVersion(), new ButacasSeleccionadasEvent(aggregateRootId, butacas));
+        eventPublisher.tryPublish(representacion.getVersion(), new ButacasSeleccionadasEvent(aggregateRootId, butacas, email));
     }
 }

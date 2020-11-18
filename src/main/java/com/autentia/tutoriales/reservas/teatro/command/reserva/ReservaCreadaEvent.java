@@ -13,4 +13,5 @@ public class ReservaCreadaEvent implements Event<UUID> {
     UUID aggregateRootId;
     UUID representacion;
     Set<Butaca> butacas;
+    String cliente;
 }

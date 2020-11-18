@@ -27,6 +27,7 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
                 .version(version)
                 .representacion(event.getRepresentacion())
                 .butacas(event.getButacas())
+                .cliente(event.getCliente())
                 .build();
 
         repository.save(reserva);

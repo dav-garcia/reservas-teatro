@@ -11,4 +11,5 @@ public class ButacasSeleccionadasEvent implements Event<UUID> {
 
     UUID aggregateRootId;
     Set<Butaca> butacas;
+    String email;
 }

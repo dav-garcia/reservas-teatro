@@ -33,6 +33,7 @@ public class ReservaTeatroSagaTest {
     private static final Butaca B3 = new Butaca("B", 3);
     private static final Butaca B5 = new Butaca("B", 5);
     private static final Sala SALA = new Sala("SALA", Set.of(A1, A3, A5, B1, B3, B5));
+    private static final String EMAIL = "cliente@email.com";
 
     private static final InMemoryEventPublisher<UUID> REPRESENTACION_PUBLISHER = new InMemoryEventPublisher<>();
     private static final InMemoryEventPublisher<UUID> RESERVA_PUBLISHER = new InMemoryEventPublisher<>();
@@ -50,7 +51,7 @@ public class ReservaTeatroSagaTest {
     private static final ReservaEventConsumer RESERVA_CONSUMER = new ReservaEventConsumer(RESERVA_REPOSITORY);
     private static final ClienteEventConsumer CLIENTE_CONSUMER = new ClienteEventConsumer(CLIENTE_REPOSITORY);
 
-    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(RESERVA_DISPATCHER);
+    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(RESERVA_DISPATCHER, CLIENTE_DISPATCHER);
 
     @BeforeClass
     public static void setup() {
@@ -68,14 +69,20 @@ public class ReservaTeatroSagaTest {
         final var idRepresentacion = UUID.randomUUID();
 
         REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
-        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A3, B5)));
+        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A3, B5), EMAIL));
 
         final var representacion = REPRESENTACION_REPOSITORY.load(idRepresentacion).orElseThrow();
+        final var cliente = CLIENTE_REPOSITORY.load(EMAIL).orElseThrow();
         final var reserva = RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(idRepresentacion)).get(0);
 
         assertThat(representacion.getVersion()).isEqualTo(2L);
         assertThat(representacion.getButacasLibres()).containsExactlyInAnyOrder(A5, B1, B3);
+        assertThat(cliente.getVersion()).isEqualTo(1L);
+        assertThat(cliente.isSuscrito()).isFalse();
+        assertThat(cliente.getNombre()).isNull();
+        assertThat(cliente.getDescuentos()).isEmpty();
         assertThat(reserva.getVersion()).isEqualTo(1L);
         assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A3, B5);
+        assertThat(reserva.getCliente()).isEqualTo(EMAIL);
     }
 }

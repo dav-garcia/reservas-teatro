@@ -16,6 +16,7 @@ public class CrearReservaCommand implements Command<Reserva, UUID> {
     UUID aggregateRootId;
     UUID representacion;
     Set<Butaca> butacas;
+    String cliente;
 
     @Override
     public void execute(Repository<Reserva, UUID> repository, EventPublisher<UUID> eventPublisher) {
@@ -23,6 +24,6 @@ public class CrearReservaCommand implements Command<Reserva, UUID> {
             throw new CommandNotValidException("Reserva ya existe");
         }
 
-        eventPublisher.tryPublish(0L, new ReservaCreadaEvent(aggregateRootId, representacion, butacas));
+        eventPublisher.tryPublish(0L, new ReservaCreadaEvent(aggregateRootId, representacion, butacas, cliente));
     }
 }
