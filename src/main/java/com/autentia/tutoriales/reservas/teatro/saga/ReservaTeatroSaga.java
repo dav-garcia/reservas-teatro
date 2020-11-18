@@ -5,7 +5,7 @@ import com.autentia.tutoriales.reservas.teatro.command.reserva.CrearReservaComma
 import com.autentia.tutoriales.reservas.teatro.command.reserva.Reserva;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventConsumer;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 
 import java.util.UUID;
 

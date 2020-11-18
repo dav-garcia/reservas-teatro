@@ -1,9 +1,9 @@
-package com.autentia.tutoriales.reservas.teatro.infra.stream.inmemory;
+package com.autentia.tutoriales.reservas.teatro.infra.event.inmemory;
 
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventConsumer;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventPublisher;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
 import java.util.HashSet;
 import java.util.List;

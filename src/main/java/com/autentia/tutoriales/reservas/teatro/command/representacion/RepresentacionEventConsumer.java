@@ -2,7 +2,7 @@ package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventConsumer;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 
 import java.util.HashSet;
 import java.util.UUID;

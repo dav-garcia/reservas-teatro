@@ -3,7 +3,7 @@ package com.autentia.tutoriales.reservas.teatro.command.representacion;
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventPublisher;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 import lombok.Value;
 
 import java.time.ZonedDateTime;

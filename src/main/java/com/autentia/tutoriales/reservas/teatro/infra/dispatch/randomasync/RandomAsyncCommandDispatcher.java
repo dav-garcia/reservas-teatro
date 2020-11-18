@@ -4,7 +4,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventPublisher;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
 import java.util.Random;
 import java.util.concurrent.ExecutorService;

@@ -3,7 +3,7 @@ package com.autentia.tutoriales.reservas.teatro.infra;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventPublisher;
+import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
 /**
  * Un comando para cambiar el estado de una agregada

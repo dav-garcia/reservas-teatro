@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.infra.stream;
+package com.autentia.tutoriales.reservas.teatro.infra.event;
 
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;

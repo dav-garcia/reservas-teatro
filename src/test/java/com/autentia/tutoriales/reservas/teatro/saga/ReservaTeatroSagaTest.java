@@ -12,7 +12,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.occ.OccCommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.inmemory.InMemoryEventPublisher;
+import com.autentia.tutoriales.reservas.teatro.infra.event.inmemory.InMemoryEventPublisher;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
