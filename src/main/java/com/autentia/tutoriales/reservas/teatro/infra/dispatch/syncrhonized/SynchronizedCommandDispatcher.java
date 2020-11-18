@@ -3,32 +3,25 @@ package com.autentia.tutoriales.reservas.teatro.infra.dispatch.syncrhonized;
 import com.autentia.tutoriales.reservas.teatro.error.CommandException;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
 import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
-import com.autentia.tutoriales.reservas.teatro.infra.AggregateRootRegistry;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
-import com.autentia.tutoriales.reservas.teatro.infra.EventSourceId;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.stream.EventStreamFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.stream.EventPublisher;
 
-public class SynchronizedCommandDispatcher implements CommandDispatcher {
+public class SynchronizedCommandDispatcher<T extends AggregateRoot<U>, U> implements CommandDispatcher<T, U> {
 
-    private final EventStreamFactory eventStreamFactory;
-    private final AggregateRootRegistry registry;
+    private final Repository<T, U> repository;
+    private final EventPublisher<U> eventPublisher;
 
-    public SynchronizedCommandDispatcher(final EventStreamFactory eventStreamFactory) {
-        this.eventStreamFactory = eventStreamFactory;
-        registry = new AggregateRootRegistry();
+    public SynchronizedCommandDispatcher(final Repository<T, U> repository, final EventPublisher<U> eventPublisher) {
+        this.repository = repository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
-    public <T extends AggregateRoot<U>, U> void registerAggregateRoot(final Class<T> type, final Repository<T, U> repository) {
-        registry.register(type, repository);
-    }
-
-    @Override
-    public synchronized <T extends AggregateRoot<U>, U> void dispatch(final Command<T, U> command, final EventSourceId<T, U> id) {
+    public synchronized void dispatch(final U id, final Command<T, U> command) {
         try {
-            command.execute(id.getValue(), registry.getRepository(id.getType()), eventStreamFactory.getEventStream(id));
+            command.execute(id, repository, eventPublisher);
         } catch (InconsistentStateException e) {
             throw new CommandException("Excepción imposible en entorno singleton", e);
         }
