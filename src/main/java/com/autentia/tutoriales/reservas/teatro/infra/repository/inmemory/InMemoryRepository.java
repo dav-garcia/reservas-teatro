@@ -3,10 +3,13 @@ package com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory;
 import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class InMemoryRepository<T extends AggregateRoot<U>, U> implements Repository<T, U> {
 
@@ -34,6 +37,11 @@ public class InMemoryRepository<T extends AggregateRoot<U>, U> implements Reposi
     public void delete(final U id) {
         randomPause();
         instances.remove(id);
+    }
+
+    @Override
+    public List<T> find(final Predicate<T> filter) {
+        return instances.values().stream().filter(filter).collect(Collectors.toList());
     }
 
     private void randomPause() {

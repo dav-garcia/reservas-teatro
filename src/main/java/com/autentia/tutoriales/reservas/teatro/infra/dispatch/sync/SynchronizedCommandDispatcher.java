@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.infra.dispatch.syncrhonized;
+package com.autentia.tutoriales.reservas.teatro.infra.dispatch.sync;
 
 import com.autentia.tutoriales.reservas.teatro.error.CommandException;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
