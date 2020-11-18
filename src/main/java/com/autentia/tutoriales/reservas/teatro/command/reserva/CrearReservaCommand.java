@@ -23,6 +23,6 @@ public class CrearReservaCommand implements Command<Reserva, UUID> {
             throw new CommandNotValidException("Reserva ya existe");
         }
 
-        eventPublisher.tryPublish(0, new ReservaCreadaEvent(aggregateRootId, representacion, butacas));
+        eventPublisher.tryPublish(0L, new ReservaCreadaEvent(aggregateRootId, representacion, butacas));
     }
 }

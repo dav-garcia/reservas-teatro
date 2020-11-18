@@ -1,5 +1,7 @@
 package com.autentia.tutoriales.reservas.teatro.saga;
 
+import com.autentia.tutoriales.reservas.teatro.command.cliente.Cliente;
+import com.autentia.tutoriales.reservas.teatro.command.cliente.ClienteEventConsumer;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.CrearRepresentacionCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Representacion;
@@ -32,32 +34,44 @@ public class ReservaTeatroSagaTest {
     private static final Butaca B5 = new Butaca("B", 5);
     private static final Sala SALA = new Sala("SALA", Set.of(A1, A3, A5, B1, B3, B5));
 
-    private static final InMemoryEventPublisher<UUID> PUBLISHER = new InMemoryEventPublisher<>();
+    private static final InMemoryEventPublisher<UUID> REPRESENTACION_PUBLISHER = new InMemoryEventPublisher<>();
+    private static final InMemoryEventPublisher<UUID> RESERVA_PUBLISHER = new InMemoryEventPublisher<>();
+    private static final InMemoryEventPublisher<String> CLIENTE_PUBLISHER = new InMemoryEventPublisher<>();
+
     private static final Repository<Representacion, UUID> REPRESENTACION_REPOSITORY = new InMemoryRepository<>();
     private static final Repository<Reserva, UUID> RESERVA_REPOSITORY = new InMemoryRepository<>();
-    private static final CommandDispatcher<Representacion, UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_REPOSITORY, PUBLISHER);
-    private static final CommandDispatcher<Reserva, UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_REPOSITORY, PUBLISHER);
+    private static final Repository<Cliente, String> CLIENTE_REPOSITORY = new InMemoryRepository<>();
+
+    private static final CommandDispatcher<Representacion, UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_REPOSITORY, REPRESENTACION_PUBLISHER);
+    private static final CommandDispatcher<Reserva, UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_REPOSITORY, RESERVA_PUBLISHER);
+    private static final CommandDispatcher<Cliente, String> CLIENTE_DISPATCHER = new OccCommandDispatcher<Cliente, String>(CLIENTE_REPOSITORY, CLIENTE_PUBLISHER);
+
     private static final RepresentacionEventConsumer REPRESENTACION_CONSUMER = new RepresentacionEventConsumer(REPRESENTACION_REPOSITORY);
     private static final ReservaEventConsumer RESERVA_CONSUMER = new ReservaEventConsumer(RESERVA_REPOSITORY);
+    private static final ClienteEventConsumer CLIENTE_CONSUMER = new ClienteEventConsumer(CLIENTE_REPOSITORY);
 
     private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(RESERVA_DISPATCHER);
 
     @BeforeClass
     public static void setup() {
-        PUBLISHER.registerEventConsumer(REPRESENTACION_CONSUMER);
-        PUBLISHER.registerEventConsumer(RESERVA_CONSUMER);
-        PUBLISHER.registerEventConsumer(SUT);
+        REPRESENTACION_PUBLISHER.registerEventConsumer(REPRESENTACION_CONSUMER);
+        RESERVA_PUBLISHER.registerEventConsumer(RESERVA_CONSUMER);
+        CLIENTE_PUBLISHER.registerEventConsumer(CLIENTE_CONSUMER);
+
+        REPRESENTACION_PUBLISHER.registerEventConsumer(SUT.getRepresentacionEventConsumer());
+        RESERVA_PUBLISHER.registerEventConsumer(SUT.getReservaEventConsumer());
+        CLIENTE_PUBLISHER.registerEventConsumer(SUT.getClienteEventConsumer());
     }
 
     @Test
     public void givenSeleccionarButacasThenReservaCreada() {
-        final var id = UUID.randomUUID();
+        final var idRepresentacion = UUID.randomUUID();
 
-        REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(id, ZonedDateTime.now(), SALA));
-        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(id, Set.of(A1, A3, B5)));
+        REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
+        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A3, B5)));
 
-        final var representacion = REPRESENTACION_REPOSITORY.load(id).orElseThrow();
-        final var reserva = RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(id)).get(0);
+        final var representacion = REPRESENTACION_REPOSITORY.load(idRepresentacion).orElseThrow();
+        final var reserva = RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(idRepresentacion)).get(0);
 
         assertThat(representacion.getVersion()).isEqualTo(2L);
         assertThat(representacion.getButacasLibres()).containsExactlyInAnyOrder(A5, B1, B3);

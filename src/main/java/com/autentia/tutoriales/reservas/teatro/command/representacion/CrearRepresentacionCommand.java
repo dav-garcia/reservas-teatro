@@ -22,6 +22,6 @@ public class CrearRepresentacionCommand implements Command<Representacion, UUID>
             throw new CommandNotValidException("Representación ya existe");
         }
 
-        eventPublisher.tryPublish(0, new RepresentacionCreadaEvent(aggregateRootId, cuando, donde));
+        eventPublisher.tryPublish(0L, new RepresentacionCreadaEvent(aggregateRootId, cuando, donde));
     }
 }

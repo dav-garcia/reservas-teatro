@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.error;
 
-public class InconsistentStateException extends EventStreamException {
+public class InconsistentStateException extends EventException {
 
     public InconsistentStateException(final String message) {
         super(message);

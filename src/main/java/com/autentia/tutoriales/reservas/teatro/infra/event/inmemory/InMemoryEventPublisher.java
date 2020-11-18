@@ -1,11 +1,13 @@
 package com.autentia.tutoriales.reservas.teatro.infra.event.inmemory;
 
+import com.autentia.tutoriales.reservas.teatro.error.EventException;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,15 +28,21 @@ public class InMemoryEventPublisher<U> implements EventPublisher<U> {
     }
 
     @Override
-    public void tryPublish(final long expectedVersion, final Event<U> event) {
-        final var newVersion = expectedVersion + 1L;
-        final var currentVersion = casCurrentVersion(event.getAggregateRootId(), expectedVersion, newVersion);
+    public void tryPublish(final long expectedVersion, final List<Event<U>> events) {
+        if (events.stream().map(Event::getAggregateRootId).distinct().count() > 1) {
+            throw new EventException("Los eventos afectan a más de una instancia de agregada");
+        }
 
-        if (expectedVersion == currentVersion) {
-            notifyEventConsumers(newVersion, event);
-        } else {
-            throw new InconsistentStateException(
-                    String.format("Versiones no coinciden: %d vs %d", expectedVersion, currentVersion));
+        final var aggregateRootId = events.get(0).getAggregateRootId();
+        final var newVersion = expectedVersion + events.size();
+        long currentVersion = casCurrentVersion(aggregateRootId, expectedVersion, newVersion);
+
+        if (expectedVersion != currentVersion) {
+            throw new InconsistentStateException(String.format("Versiones no coinciden: %d vs %d", expectedVersion, currentVersion));
+        }
+
+        for (final Event<U> event : events) {
+            notifyEventConsumers(++currentVersion, event);
         }
     }
 
