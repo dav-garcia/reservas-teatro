@@ -6,7 +6,6 @@ import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,11 +14,11 @@ import java.util.concurrent.atomic.AtomicLong;
 public class InMemoryEventPublisher<U> implements EventPublisher<U> {
 
     private final Set<EventConsumer<U>> eventConsumers;
-    private final ConcurrentMap<U, AtomicLong> latestVersions;
+    private final ConcurrentMap<U, AtomicLong> currentVersions;
 
     public InMemoryEventPublisher() {
         eventConsumers = new HashSet<>();
-        latestVersions = new ConcurrentHashMap<>();
+        currentVersions = new ConcurrentHashMap<>();
     }
 
     public void registerEventConsumer(final EventConsumer<U> eventConsumer) {
@@ -27,22 +26,24 @@ public class InMemoryEventPublisher<U> implements EventPublisher<U> {
     }
 
     @Override
-    public void tryPublish(final U id, final long expectedVersion, final List<Event> events) {
-        final var latestVersion = latestVersions.computeIfAbsent(id, i -> new AtomicLong(0));
+    public void tryPublish(final long expectedVersion, final Event<U> event) {
+        final var newVersion = expectedVersion + 1L;
+        final var currentVersion = casCurrentVersion(event.getAggregateRootId(), expectedVersion, newVersion);
 
-        long currentVersion = expectedVersion;
-        for (final Event event : events) {
-            final var realVersion = latestVersion.compareAndExchange(currentVersion, currentVersion + 1L);
-            if (currentVersion == realVersion) {
-                notifyEventConsumers(id, ++currentVersion, event);
-            } else {
-                throw new InconsistentStateException(
-                        String.format("Versiones no coinciden: %d vs %d", currentVersion, realVersion));
-            }
+        if (expectedVersion == currentVersion) {
+            notifyEventConsumers(newVersion, event);
+        } else {
+            throw new InconsistentStateException(
+                    String.format("Versiones no coinciden: %d vs %d", expectedVersion, currentVersion));
         }
     }
 
-    private void notifyEventConsumers(final U id, final long version, final Event event) {
-        eventConsumers.forEach(c -> c.consume(id, version,  event));
+    private long casCurrentVersion(final U id, long expectedVersion, long newVersion) {
+        final var currentVersion = currentVersions.computeIfAbsent(id, i -> new AtomicLong(expectedVersion));
+        return currentVersion.compareAndExchange(expectedVersion, newVersion);
+    }
+
+    private void notifyEventConsumers(final long version, final Event<U> event) {
+        eventConsumers.forEach(c -> c.consume(version,  event));
     }
 }

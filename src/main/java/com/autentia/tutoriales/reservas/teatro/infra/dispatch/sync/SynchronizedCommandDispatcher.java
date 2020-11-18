@@ -19,9 +19,9 @@ public class SynchronizedCommandDispatcher<T extends AggregateRoot<U>, U> implem
     }
 
     @Override
-    public synchronized void dispatch(final U id, final Command<T, U> command) {
+    public synchronized void dispatch(final Command<T, U> command) {
         try {
-            command.execute(id, repository, eventPublisher);
+            command.execute(repository, eventPublisher);
         } catch (InconsistentStateException e) {
             throw new CommandException("Excepción imposible en entorno singleton", e);
         }

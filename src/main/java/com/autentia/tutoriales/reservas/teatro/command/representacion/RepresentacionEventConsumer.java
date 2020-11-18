@@ -16,17 +16,17 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
     }
 
     @Override
-    public void consume(final UUID id, long version, Event event) {
+    public void consume(long version, Event<UUID> event) {
         if (event instanceof RepresentacionCreadaEvent) {
-            apply(id, version, (RepresentacionCreadaEvent) event);
+            apply(version, (RepresentacionCreadaEvent) event);
         } else if (event instanceof ButacasSeleccionadasEvent) {
-            apply(id, version, (ButacasSeleccionadasEvent) event);
+            apply(version, (ButacasSeleccionadasEvent) event);
         }
     }
 
-    public void apply(final UUID id, final long version, final RepresentacionCreadaEvent event) {
+    public void apply(final long version, final RepresentacionCreadaEvent event) {
         final var representacion = Representacion.builder()
-                .id(id)
+                .id(event.getAggregateRootId())
                 .version(version)
                 .cuando(event.getCuando())
                 .donde(event.getDonde())
@@ -36,8 +36,8 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
         repository.save(representacion);
     }
 
-    public void apply(final UUID id, final long version, final ButacasSeleccionadasEvent event) {
-        final var representacion = repository.load(id).orElseThrow();
+    public void apply(final long version, final ButacasSeleccionadasEvent event) {
+        final var representacion = repository.load(event.getAggregateRootId()).orElseThrow();
 
         representacion.setVersion(version);
         representacion.getButacasLibres().removeAll(event.getButacas());

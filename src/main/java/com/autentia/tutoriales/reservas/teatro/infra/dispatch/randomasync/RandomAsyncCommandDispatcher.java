@@ -23,8 +23,13 @@ public class RandomAsyncCommandDispatcher<T extends AggregateRoot<U>, U> impleme
         }
 
         @Override
-        public void execute(final U id, final Repository<T, U> repository, final EventPublisher<U> eventPublisher) {
-            executorService.execute(() -> command.execute(id, repository, eventPublisher));
+        public U getAggregateRootId() {
+            return command.getAggregateRootId();
+        }
+
+        @Override
+        public void execute(final Repository<T, U> repository, final EventPublisher<U> eventPublisher) {
+            executorService.execute(() -> command.execute(repository, eventPublisher));
         }
     }
 
@@ -51,7 +56,7 @@ public class RandomAsyncCommandDispatcher<T extends AggregateRoot<U>, U> impleme
     }
 
     @Override
-    public void dispatch(final U id, final Command<T, U> command) {
-        dispatchers[random.nextInt(dispatchers.length)].dispatch(id, new AsyncCommandDecorator(command));
+    public void dispatch(final Command<T, U> command) {
+        dispatchers[random.nextInt(dispatchers.length)].dispatch(new AsyncCommandDecorator(command));
     }
 }

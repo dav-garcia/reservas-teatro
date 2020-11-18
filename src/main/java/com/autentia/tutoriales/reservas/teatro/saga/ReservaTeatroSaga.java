@@ -18,13 +18,13 @@ public class ReservaTeatroSaga implements EventConsumer<UUID> {
     }
 
     @Override
-    public void consume(final UUID id, final long version, final Event event) {
+    public void consume(final long version, final Event<UUID> event) {
         if (event instanceof ButacasSeleccionadasEvent) {
-            crearReserva(id, (ButacasSeleccionadasEvent) event);
+            crearReserva((ButacasSeleccionadasEvent) event);
         }
     }
 
-    private void crearReserva(final UUID id, final ButacasSeleccionadasEvent event) {
-        reservaDispatcher.dispatch(UUID.randomUUID(), new CrearReservaCommand(id, event.getButacas()));
+    private void crearReserva(final ButacasSeleccionadasEvent event) {
+        reservaDispatcher.dispatch(new CrearReservaCommand(UUID.randomUUID(), event.getAggregateRootId(), event.getButacas()));
     }
 }

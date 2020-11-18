@@ -8,8 +8,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Value
-public class ReservaCreadaEvent implements Event {
+public class ReservaCreadaEvent implements Event<UUID> {
 
+    UUID aggregateRootId;
     UUID representacion;
     Set<Butaca> butacas;
 }

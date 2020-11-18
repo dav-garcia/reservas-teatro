@@ -53,14 +53,15 @@ public class ReservaTeatroSagaTest {
     public void givenSeleccionarButacasThenReservaCreada() {
         final var id = UUID.randomUUID();
 
-        REPRESENTACION_DISPATCHER.dispatch(id, new CrearRepresentacionCommand(ZonedDateTime.now(), SALA));
-        REPRESENTACION_DISPATCHER.dispatch(id, new SeleccionarButacasCommand(Set.of(A1, A3, B5)));
+        REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(id, ZonedDateTime.now(), SALA));
+        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(id, Set.of(A1, A3, B5)));
 
         final var representacion = REPRESENTACION_REPOSITORY.load(id).orElseThrow();
         final var reserva = RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(id)).get(0);
 
         assertThat(representacion.getVersion()).isEqualTo(2L);
         assertThat(representacion.getButacasLibres()).containsExactlyInAnyOrder(A5, B1, B3);
+        assertThat(reserva.getVersion()).isEqualTo(1L);
         assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A3, B5);
     }
 }

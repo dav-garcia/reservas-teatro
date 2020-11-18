@@ -22,11 +22,11 @@ public class OccCommandDispatcher<T extends AggregateRoot<U>, U> implements Comm
     }
 
     @Override
-    public void dispatch(final U id, final Command<T, U> command) {
+    public void dispatch(final Command<T, U> command) {
         var retry = true;
         while (retry) {
             try {
-                command.execute(id, repository, eventPublisher);
+                command.execute(repository, eventPublisher);
                 retry = false;
             } catch (InconsistentStateException e) {
                 LOG.warn("Reintentando comando por estado inconsistente", e);

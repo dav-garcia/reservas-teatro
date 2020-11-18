@@ -15,15 +15,15 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
     }
 
     @Override
-    public void consume(final UUID id, final long version, final Event event) {
+    public void consume(final long version, final Event<UUID> event) {
         if (event instanceof ReservaCreadaEvent) {
-            apply(id, version, (ReservaCreadaEvent) event);
+            apply(version, (ReservaCreadaEvent) event);
         }
     }
 
-    private void apply(final UUID id, final long version, final ReservaCreadaEvent event) {
+    private void apply(final long version, final ReservaCreadaEvent event) {
         final var reserva = Reserva.builder()
-                .id(id)
+                .id(event.getAggregateRootId())
                 .version(version)
                 .representacion(event.getRepresentacion())
                 .butacas(event.getButacas())
