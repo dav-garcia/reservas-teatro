@@ -29,12 +29,12 @@ import static org.awaitility.Awaitility.await;
 public class ReservaTeatroSagaTest {
 
     private static final Butaca A1 = new Butaca("A", 1);
+    private static final Butaca A2 = new Butaca("A", 2);
     private static final Butaca A3 = new Butaca("A", 3);
-    private static final Butaca A5 = new Butaca("A", 5);
     private static final Butaca B1 = new Butaca("B", 1);
+    private static final Butaca B2 = new Butaca("B", 2);
     private static final Butaca B3 = new Butaca("B", 3);
-    private static final Butaca B5 = new Butaca("B", 5);
-    private static final Sala SALA = new Sala("SALA", Set.of(A1, A3, A5, B1, B3, B5));
+    private static final Sala SALA = new Sala("SALA", Set.of(A1, A2, A3, B1, B2, B3));
     private static final String EMAIL = "cliente@email.com";
 
     private static final InMemoryEventPublisher<UUID> REPRESENTACION_PUBLISHER = new InMemoryEventPublisher<>();
@@ -71,20 +71,20 @@ public class ReservaTeatroSagaTest {
         final var idRepresentacion = UUID.randomUUID();
 
         REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
-        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A3, B5), EMAIL));
+        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A2, B3), EMAIL));
 
         final var representacion = REPRESENTACION_REPOSITORY.load(idRepresentacion).orElseThrow();
         final var cliente = CLIENTE_REPOSITORY.load(EMAIL).orElseThrow();
         final var reserva = RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(idRepresentacion)).get(0);
 
         assertThat(representacion.getVersion()).isEqualTo(2L);
-        assertThat(representacion.getButacasLibres()).containsExactlyInAnyOrder(A5, B1, B3);
+        assertThat(representacion.getButacasLibres()).containsExactlyInAnyOrder(A3, B1, B2);
         assertThat(cliente.getVersion()).isEqualTo(1L);
         assertThat(cliente.isSuscrito()).isFalse();
         assertThat(cliente.getNombre()).isNull();
         assertThat(cliente.getDescuentos()).isEmpty();
         assertThat(reserva.getVersion()).isEqualTo(1L);
-        assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A3, B5);
+        assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A2, B3);
         assertThat(reserva.getCliente()).isEqualTo(EMAIL);
     }
 
@@ -95,10 +95,11 @@ public class ReservaTeatroSagaTest {
             final var idRepresentacion = UUID.randomUUID();
 
             REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
-            REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A3, B5), EMAIL));
+            REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, Set.of(A1, A2, B3), EMAIL));
 
             await().atMost(2, TimeUnit.SECONDS).until(() ->
                     RESERVA_REPOSITORY.find(r -> r.getRepresentacion().equals(idRepresentacion)).isEmpty());
+            // TODO: Assert butacas devueltas
         } finally {
             SUT.setTimeout(null);
         }
