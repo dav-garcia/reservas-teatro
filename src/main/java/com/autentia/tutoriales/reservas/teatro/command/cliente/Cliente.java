@@ -11,18 +11,16 @@ import org.springframework.lang.NonNull;
 import java.util.List;
 
 @Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(builderClassName = "Builder")
 public class Cliente implements AggregateRoot<String> {
 
-    String id;
-    @Setter
-    long version;
-    @Setter
-    boolean suscrito;
-    @Setter
-    String nombre;
-    List<Descuento> descuentos;
+    private final String id;
+    private long version;
+    private boolean suscrito;
+    private String nombre;
+    private final List<Descuento> descuentos;
 
     @NonNull
     public String getEmail() {

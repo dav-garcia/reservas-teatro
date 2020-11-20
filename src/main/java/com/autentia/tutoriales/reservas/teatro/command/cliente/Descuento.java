@@ -4,18 +4,20 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(builderClassName = "Builder")
 public class Descuento {
 
-    UUID id;
-    int valor;
-    LocalDate validoDesde;
-    LocalDate validoHasta;
+    private final UUID id;
+    private final int valor;
+    private final LocalDate validoDesde;
+    private final LocalDate validoHasta;
     boolean consumido;
 }

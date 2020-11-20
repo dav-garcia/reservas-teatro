@@ -12,12 +12,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(builderClassName = "Builder")
 public class Reserva implements AggregateRoot<UUID> {
 
     private final UUID id;
-    @Setter
     private long version;
     private final UUID representacion;
     private final Set<Butaca> butacas;

@@ -12,12 +12,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(builderClassName = "Builder")
 public class Representacion implements AggregateRoot<UUID> {
 
     private final UUID id;
-    @Setter
     private long version;
     private final ZonedDateTime cuando;
     private final Sala donde;

@@ -53,13 +53,17 @@ public class ClienteEventConsumer implements EventConsumer<String> {
     private void apply(final long version, final DescuentoConcedidoEvent event) {
         final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
 
-        cliente.setVersion(version);
-        cliente.getDescuentos().add(Descuento.builder()
-                .id(event.getId())
-                .valor(event.getValor())
-                .validoDesde(event.getValidoDesde())
-                .validoHasta(event.getValidoHasta())
-                .consumido(false)
-                .build());
+        if (cliente.getDescuentos().stream().noneMatch(d -> d.getId().equals(event.getId()))) { // Idempotencia
+            cliente.setVersion(version);
+            cliente.getDescuentos().add(Descuento.builder()
+                    .id(event.getId())
+                    .valor(event.getValor())
+                    .validoDesde(event.getValidoDesde())
+                    .validoHasta(event.getValidoHasta())
+                    .consumido(false)
+                    .build());
+
+            repository.save(cliente);
+        }
     }
 }
