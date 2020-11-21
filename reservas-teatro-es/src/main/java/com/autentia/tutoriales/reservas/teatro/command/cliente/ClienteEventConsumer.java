@@ -22,6 +22,10 @@ public class ClienteEventConsumer implements EventConsumer<String> {
             apply(version, (ClienteSuscritoEvent) event);
         } else if (event instanceof DescuentoConcedidoEvent) {
             apply(version, (DescuentoConcedidoEvent) event);
+        } else if (event instanceof DescuentoAplicadoEvent) {
+            apply(version, (DescuentoAplicadoEvent) event);
+        } else if (event instanceof DescuentoRecuperadoEvent) {
+            apply(version, (DescuentoRecuperadoEvent) event);
         }
     }
 
@@ -65,5 +69,31 @@ public class ClienteEventConsumer implements EventConsumer<String> {
 
             repository.save(cliente);
         }
+    }
+
+    private void apply(final long version, final DescuentoAplicadoEvent event) {
+        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
+        final var descuento = cliente.getDescuentos().stream()
+                .filter(d -> d.getId().equals(event.getDescuento()))
+                .findAny()
+                .orElseThrow();
+
+        cliente.setVersion(version);
+        descuento.setConsumido(true);
+
+        repository.save(cliente);
+    }
+
+    private void apply(final long version, final DescuentoRecuperadoEvent event) {
+        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
+        final var descuento = cliente.getDescuentos().stream()
+                .filter(d -> d.getId().equals(event.getDescuento()))
+                .findAny()
+                .orElseThrow();
+
+        cliente.setVersion(version);
+        descuento.setConsumido(false);
+
+        repository.save(cliente);
     }
 }
