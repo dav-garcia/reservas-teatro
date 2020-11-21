@@ -18,6 +18,8 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
     public void consume(final long version, final Event<UUID> event) {
         if (event instanceof ReservaCreadaEvent) {
             apply(version, (ReservaCreadaEvent) event);
+        } else if (event instanceof ReservaConfirmadaEvent) {
+            apply(version, (ReservaConfirmadaEvent) event);
         } else if (event instanceof ReservaCanceladaEvent) {
             apply(version, (ReservaCanceladaEvent) event);
         }
@@ -31,6 +33,15 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
                 .butacas(event.getButacas())
                 .cliente(event.getCliente())
                 .build();
+
+        repository.save(reserva);
+    }
+
+    private void apply(final long version, final ReservaConfirmadaEvent event) {
+        final var reserva = repository.load(event.getAggregateRootId()).orElseThrow();
+
+        reserva.setVersion(version);
+        reserva.setConfirmada(true);
 
         repository.save(reserva);
     }
