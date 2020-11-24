@@ -10,6 +10,7 @@ import java.util.UUID;
 public class ButacasSeleccionadasEvent implements Event<UUID> {
 
     UUID aggregateRootId;
+    UUID paraReserva;
     Set<Butaca> butacas;
     String email;
 }

@@ -3,11 +3,13 @@ package com.autentia.tutoriales.reservas.teatro.command.cliente;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import lombok.Value;
 
+import java.util.List;
 import java.util.UUID;
 
 @Value
-public class DescuentoRecuperadoEvent implements Event<String> {
+public class DescuentosAplicadosEvent implements Event<String> {
 
     String aggregateRootId;
-    UUID descuento;
+    UUID enReserva;
+    List<UUID> descuentos;
 }

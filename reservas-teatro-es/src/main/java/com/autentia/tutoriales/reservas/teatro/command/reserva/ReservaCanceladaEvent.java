@@ -9,5 +9,5 @@ import java.util.UUID;
 public class ReservaCanceladaEvent implements Event<UUID> {
 
     UUID aggregateRootId;
-    boolean porTimeout;
+    boolean abandonada;
 }

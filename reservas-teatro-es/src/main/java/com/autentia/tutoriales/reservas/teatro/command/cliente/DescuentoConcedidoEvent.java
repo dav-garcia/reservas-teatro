@@ -11,6 +11,7 @@ public class DescuentoConcedidoEvent implements Event<String> {
 
     String aggregateRootId;
     UUID id;
+    String descripcion;
     int valor;
     LocalDate validoDesde;
     LocalDate validoHasta;

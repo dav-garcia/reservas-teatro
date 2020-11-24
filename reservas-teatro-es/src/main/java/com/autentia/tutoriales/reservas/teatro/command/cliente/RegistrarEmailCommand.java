@@ -12,7 +12,7 @@ public class RegistrarEmailCommand implements Command<Cliente, String> {
 
     @Override
     public void execute(Repository<Cliente, String> repository, EventPublisher<String> eventPublisher) {
-        if (repository.load(aggregateRootId).isEmpty()) {
+        if (repository.load(aggregateRootId).isEmpty()) { // No hace nada si el email ya está registrado
             eventPublisher.tryPublish(0L, new EmailRegistradoEvent(aggregateRootId));
         }
     }

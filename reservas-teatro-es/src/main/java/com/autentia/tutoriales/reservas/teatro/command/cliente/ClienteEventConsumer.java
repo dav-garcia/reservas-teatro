@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 public class ClienteEventConsumer implements EventConsumer<String> {
 
-    private final Repository<Cliente, String> repository;
+    private final Repository<Cliente, String> clienteRepository;
 
-    public ClienteEventConsumer(Repository<Cliente, String> repository) {
-        this.repository = repository;
+    public ClienteEventConsumer(Repository<Cliente, String> clienteRepository) {
+        this.clienteRepository = clienteRepository;
     }
 
     @Override
@@ -22,10 +22,10 @@ public class ClienteEventConsumer implements EventConsumer<String> {
             apply(version, (ClienteSuscritoEvent) event);
         } else if (event instanceof DescuentoConcedidoEvent) {
             apply(version, (DescuentoConcedidoEvent) event);
-        } else if (event instanceof DescuentoAplicadoEvent) {
-            apply(version, (DescuentoAplicadoEvent) event);
-        } else if (event instanceof DescuentoRecuperadoEvent) {
-            apply(version, (DescuentoRecuperadoEvent) event);
+        } else if (event instanceof DescuentosAplicadosEvent) {
+            apply(version, (DescuentosAplicadosEvent) event);
+        } else if (event instanceof DescuentosRecuperadosEvent) {
+            apply(version, (DescuentosRecuperadosEvent) event);
         }
     }
 
@@ -37,11 +37,11 @@ public class ClienteEventConsumer implements EventConsumer<String> {
                 .descuentos(new ArrayList<>())
                 .build();
 
-        repository.save(cliente);
+        clienteRepository.save(cliente);
     }
 
     private void apply(final long version, final ClienteSuscritoEvent event) {
-        final var cliente = repository.load(event.getAggregateRootId())
+        final var cliente = clienteRepository.load(event.getAggregateRootId())
                 .orElseGet(() -> Cliente.builder()
                         .id(event.getAggregateRootId())
                         .descuentos(new ArrayList<>())
@@ -51,49 +51,45 @@ public class ClienteEventConsumer implements EventConsumer<String> {
         cliente.setSuscrito(true);
         cliente.setNombre(event.getNombre());
 
-        repository.save(cliente);
+        clienteRepository.save(cliente);
     }
 
     private void apply(final long version, final DescuentoConcedidoEvent event) {
-        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
+        final var cliente = clienteRepository.load(event.getAggregateRootId()).orElseThrow();
 
         if (cliente.getDescuentos().stream().noneMatch(d -> d.getId().equals(event.getId()))) { // Idempotencia
             cliente.setVersion(version);
             cliente.getDescuentos().add(Descuento.builder()
                     .id(event.getId())
+                    .descripcion(event.getDescripcion())
                     .valor(event.getValor())
                     .validoDesde(event.getValidoDesde())
                     .validoHasta(event.getValidoHasta())
-                    .consumido(false)
                     .build());
 
-            repository.save(cliente);
+            clienteRepository.save(cliente);
         }
     }
 
-    private void apply(final long version, final DescuentoAplicadoEvent event) {
-        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
-        final var descuento = cliente.getDescuentos().stream()
-                .filter(d -> d.getId().equals(event.getDescuento()))
-                .findAny()
-                .orElseThrow();
+    private void apply(final long version, final DescuentosAplicadosEvent event) {
+        final var cliente = clienteRepository.load(event.getAggregateRootId()).orElseThrow();
 
         cliente.setVersion(version);
-        descuento.setConsumido(true);
+        cliente.getDescuentos().stream()
+                .filter(d -> event.getDescuentos().contains(d.getId()))
+                .forEach(d -> d.setEnReserva(event.getEnReserva()));
 
-        repository.save(cliente);
+        clienteRepository.save(cliente);
     }
 
-    private void apply(final long version, final DescuentoRecuperadoEvent event) {
-        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
-        final var descuento = cliente.getDescuentos().stream()
-                .filter(d -> d.getId().equals(event.getDescuento()))
-                .findAny()
-                .orElseThrow();
+    private void apply(final long version, final DescuentosRecuperadosEvent event) {
+        final var cliente = clienteRepository.load(event.getAggregateRootId()).orElseThrow();
 
         cliente.setVersion(version);
-        descuento.setConsumido(false);
+        cliente.getDescuentos().stream()
+                .filter(d -> event.getDescuentos().contains(d.getId()))
+                .forEach(d -> d.setEnReserva(null));
 
-        repository.save(cliente);
+        clienteRepository.save(cliente);
     }
 }

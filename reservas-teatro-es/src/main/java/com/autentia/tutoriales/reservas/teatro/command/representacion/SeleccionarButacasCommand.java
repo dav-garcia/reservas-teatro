@@ -13,6 +13,7 @@ import java.util.UUID;
 public class SeleccionarButacasCommand implements Command<Representacion, UUID> {
 
     UUID aggregateRootId;
+    UUID paraReserva;
     Set<Butaca> butacas;
     String email;
 
@@ -22,6 +23,6 @@ public class SeleccionarButacasCommand implements Command<Representacion, UUID> 
                 .filter(r -> r.getButacasLibres().containsAll(butacas))
                 .orElseThrow(() -> new CommandNotValidException("Representación no existe o las butacas no están libres"));
 
-        eventPublisher.tryPublish(representacion.getVersion(), new ButacasSeleccionadasEvent(aggregateRootId, butacas, email));
+        eventPublisher.tryPublish(representacion.getVersion(), new ButacasSeleccionadasEvent(aggregateRootId, paraReserva, butacas, email));
     }
 }

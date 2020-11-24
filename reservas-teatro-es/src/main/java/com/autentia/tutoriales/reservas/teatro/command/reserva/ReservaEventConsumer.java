@@ -29,7 +29,6 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
         final var reserva = Reserva.builder()
                 .id(event.getAggregateRootId())
                 .version(version)
-                .representacion(event.getRepresentacion())
                 .butacas(event.getButacas())
                 .cliente(event.getCliente())
                 .build();

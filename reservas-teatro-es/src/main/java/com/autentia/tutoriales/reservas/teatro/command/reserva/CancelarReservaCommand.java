@@ -12,13 +12,13 @@ import java.util.UUID;
 public class CancelarReservaCommand implements Command<Reserva, UUID> {
 
     UUID aggregateRootId;
-    boolean porTimeout;
+    boolean abandonada;
 
     @Override
     public void execute(Repository<Reserva, UUID> repository, EventPublisher<UUID> eventPublisher) {
         final var reserva = repository.load(aggregateRootId)
                 .orElseThrow(() -> new CommandNotValidException("No existe la reserva"));
 
-        eventPublisher.tryPublish(reserva.getVersion(), new ReservaCanceladaEvent(aggregateRootId, porTimeout));
+        eventPublisher.tryPublish(reserva.getVersion(), new ReservaCanceladaEvent(aggregateRootId, abandonada));
     }
 }

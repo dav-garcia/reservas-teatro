@@ -16,8 +16,9 @@ import java.util.UUID;
 public class Descuento {
 
     private final UUID id;
+    private final String descripcion;
     private final int valor;
     private final LocalDate validoDesde;
     private final LocalDate validoHasta;
-    boolean consumido;
+    UUID enReserva;
 }

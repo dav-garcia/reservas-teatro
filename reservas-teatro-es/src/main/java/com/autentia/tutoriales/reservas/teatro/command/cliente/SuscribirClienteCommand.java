@@ -13,6 +13,7 @@ import java.util.UUID;
 @Value
 public class SuscribirClienteCommand implements Command<Cliente, String> {
 
+    private static final String DESCRIPCION_DESCUENTO = "Descuento por fidelización";
     private static final int VALOR_DESCUENTO = 10;
     private static final int VALIDEZ_DESCUENTO = 30;
 
@@ -32,6 +33,7 @@ public class SuscribirClienteCommand implements Command<Cliente, String> {
         eventPublisher.tryPublish(version, List.of(
                 new ClienteSuscritoEvent(aggregateRootId, nombre),
                 new DescuentoConcedidoEvent(aggregateRootId, UUID.randomUUID(),
-                        VALOR_DESCUENTO, LocalDate.now(), LocalDate.now().plusDays(VALIDEZ_DESCUENTO))));
+                        DESCRIPCION_DESCUENTO, VALOR_DESCUENTO,
+                        LocalDate.now(), LocalDate.now().plusDays(VALIDEZ_DESCUENTO))));
     }
 }

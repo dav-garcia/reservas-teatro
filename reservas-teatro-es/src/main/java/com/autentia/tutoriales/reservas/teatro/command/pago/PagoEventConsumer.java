@@ -25,6 +25,9 @@ public class PagoEventConsumer implements EventConsumer<UUID> {
         final var pago = Pago.builder()
                 .id(event.getAggregateRootId())
                 .version(version)
+                .reserva(event.getReserva())
+                .cliente(event.getCliente())
+                .conceptos(event.getConceptos())
                 .build();
 
         repository.save(pago);

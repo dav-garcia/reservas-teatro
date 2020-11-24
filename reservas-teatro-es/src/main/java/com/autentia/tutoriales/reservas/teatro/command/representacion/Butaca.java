@@ -7,4 +7,5 @@ public class Butaca {
 
     String fila;
     int silla;
+    int precio;
 }
