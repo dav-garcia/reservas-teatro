@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory;
 
-import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.Entity;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class InMemoryRepository<T extends AggregateRoot<U>, U> implements Repository<T, U> {
+public class InMemoryRepository<T extends Entity<U>, U> implements Repository<T, U> {
 
     private final ConcurrentMap<U, T> instances;
     private final Random random;

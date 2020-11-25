@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.infra.repository;
 
-import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
+import com.autentia.tutoriales.reservas.teatro.infra.Entity;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 /**
  * Repositorio persistente de las proyecciones de las agregadas
  */
-public interface Repository<T extends AggregateRoot<U>, U> {
+public interface Repository<T extends Entity<U>, U> {
 
     /**
      * Carga una instancia, si existe
