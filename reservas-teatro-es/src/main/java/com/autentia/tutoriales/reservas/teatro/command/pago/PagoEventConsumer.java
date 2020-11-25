@@ -30,6 +30,7 @@ public class PagoEventConsumer implements EventConsumer<UUID> {
                 .reserva(event.getReserva())
                 .cliente(event.getCliente())
                 .conceptos(event.getConceptos())
+                .idPasarelaPago(event.getIdPasarelaPago())
                 .build();
 
         repository.save(pago);

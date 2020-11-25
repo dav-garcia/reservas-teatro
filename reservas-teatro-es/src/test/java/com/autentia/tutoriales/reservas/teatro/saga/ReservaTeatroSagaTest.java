@@ -147,5 +147,6 @@ public class ReservaTeatroSagaTest {
                 new Concepto("Butaca A2", 20),
                 new Concepto("Butaca B3", 30),
                 new Concepto("Descuento por fidelización", -10));
+        assertThat(pago.getIdPasarelaPago()).isNotNull();
     }
 }

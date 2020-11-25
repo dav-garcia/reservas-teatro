@@ -14,4 +14,5 @@ public class PagoPropuestoEvent implements Event<UUID> {
     UUID reserva;
     String cliente;
     List<Concepto> conceptos;
+    String idPasarelaPago;
 }

@@ -21,4 +21,5 @@ public class Pago implements AggregateRoot<UUID> {
     private final UUID reserva;
     private final String cliente;
     private List<Concepto> conceptos;
+    private String idPasarelaPago;
 }
