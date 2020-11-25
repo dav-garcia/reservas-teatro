@@ -1,5 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.pago;
 
+import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;

@@ -1,5 +1,8 @@
 package com.autentia.tutoriales.reservas.teatro.command.reserva;
 
+import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCanceladaEvent;
+import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaConfirmadaEvent;
+import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;

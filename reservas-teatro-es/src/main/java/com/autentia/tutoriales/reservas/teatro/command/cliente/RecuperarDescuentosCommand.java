@@ -1,5 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.cliente;
 
+import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentosRecuperadosEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;

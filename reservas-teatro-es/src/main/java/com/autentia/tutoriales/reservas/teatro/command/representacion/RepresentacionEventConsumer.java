@@ -1,5 +1,7 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
+import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
+import com.autentia.tutoriales.reservas.teatro.event.representacion.RepresentacionCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
