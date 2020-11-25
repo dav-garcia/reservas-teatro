@@ -16,7 +16,8 @@ public class InMemoryRepositoryFactory extends RepositoryFactory {
     }
 
     @Override
-    public <T extends Entity<U>, U> Repository<T, U> getRepository(final Class<T> type) {
-        return (Repository<T, U>) repositories.computeIfAbsent(type, t -> new InMemoryRepository<>());
+    public <T extends Entity<U>, U> Repository<T, U> get(final Class<T> type) {
+        final var repository = repositories.computeIfAbsent(type, t -> new InMemoryRepository<>());
+        return (Repository<T, U>) repository;
     }
 }

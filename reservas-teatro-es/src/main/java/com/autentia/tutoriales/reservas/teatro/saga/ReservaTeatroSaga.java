@@ -7,7 +7,7 @@ import com.autentia.tutoriales.reservas.teatro.command.cliente.DescuentosAplicad
 import com.autentia.tutoriales.reservas.teatro.command.cliente.RegistrarEmailCommand;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Pago;
-import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPago;
+import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPagoCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.CancelarReservaCommand;
@@ -18,6 +18,7 @@ import com.autentia.tutoriales.reservas.teatro.command.reserva.ReservaConfirmada
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.task.TaskSchedulerBuilder;
@@ -37,12 +38,12 @@ public class ReservaTeatroSaga implements Closeable {
 
     private static final int TIMEOUT_RESERVA = 30 * 60;
 
-    private final Repository<Reserva, UUID> reservaRepository;
-    private final Repository<Cliente, String> clienteRepository;
-
     private final CommandDispatcher<Reserva, UUID> reservaDispatcher;
     private final CommandDispatcher<Cliente, String> clienteDispatcher;
     private final CommandDispatcher<Pago, UUID> pagoDispatcher;
+
+    private final Repository<Reserva, UUID> reservaRepository;
+    private final Repository<Cliente, String> clienteRepository;
 
     private final EventConsumer<UUID> representacionEventConsumer;
     private final EventConsumer<UUID> reservaEventConsumer;
@@ -53,16 +54,15 @@ public class ReservaTeatroSaga implements Closeable {
 
     private int timeout;
 
-    public ReservaTeatroSaga(final Repository<Reserva, UUID> reservaRepository,
-                             final Repository<Cliente, String> clienteRepository,
-                             final CommandDispatcher<Reserva, UUID> reservaDispatcher,
+    public ReservaTeatroSaga(final CommandDispatcher<Reserva, UUID> reservaDispatcher,
                              final CommandDispatcher<Cliente, String> clienteDispatcher,
                              final CommandDispatcher<Pago, UUID> pagoDispatcher) {
-        this.reservaRepository = reservaRepository;
-        this.clienteRepository = clienteRepository;
         this.reservaDispatcher = reservaDispatcher;
         this.clienteDispatcher = clienteDispatcher;
         this.pagoDispatcher = pagoDispatcher;
+
+        reservaRepository = RepositoryFactory.getRepository(Reserva.class);
+        clienteRepository = RepositoryFactory.getRepository(Cliente.class);
 
         representacionEventConsumer = (version, event) -> {
             if (event instanceof ButacasSeleccionadasEvent) {
@@ -144,7 +144,7 @@ public class ReservaTeatroSaga implements Closeable {
             }
         }
 
-        pagoDispatcher.dispatch(new ProponerPago(UUID.randomUUID(), event.getEnReserva(), event.getAggregateRootId(), conceptos));
+        pagoDispatcher.dispatch(new ProponerPagoCommand(UUID.randomUUID(), event.getEnReserva(), event.getAggregateRootId(), conceptos));
     }
 
     private void cancelarTareaTimeout(final ReservaCanceladaEvent event) {

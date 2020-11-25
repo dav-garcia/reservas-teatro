@@ -3,7 +3,7 @@ package com.autentia.tutoriales.reservas.teatro.command.cliente;
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -21,7 +21,8 @@ public class SuscribirClienteCommand implements Command<Cliente, String> {
     String nombre;
 
     @Override
-    public void execute(final Repository<Cliente, String> repository, final EventPublisher<String> eventPublisher) {
+    public void execute(final EventPublisher<String> eventPublisher) {
+        final var repository = RepositoryFactory.getRepository(Cliente.class);
         final var clienteOpcional = repository.load(aggregateRootId);
         final boolean suscrito = clienteOpcional.map(Cliente::isSuscrito).orElse(false);
         final long version = clienteOpcional.map(Cliente::getVersion).orElse(0L);

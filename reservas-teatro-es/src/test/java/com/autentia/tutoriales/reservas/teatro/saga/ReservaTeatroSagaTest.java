@@ -19,7 +19,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.occ.OccCommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.inmemory.InMemoryEventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -48,26 +48,24 @@ public class ReservaTeatroSagaTest {
     private static final InMemoryEventPublisher<String> CLIENTE_PUBLISHER = new InMemoryEventPublisher<>();
     private static final InMemoryEventPublisher<UUID> PAGO_PUBLISHER = new InMemoryEventPublisher<>();
 
-    private static final Repository<Representacion, UUID> REPRESENTACION_REPOSITORY = new InMemoryRepository<>();
-    private static final Repository<Reserva, UUID> RESERVA_REPOSITORY = new InMemoryRepository<>();
-    private static final Repository<Cliente, String> CLIENTE_REPOSITORY = new InMemoryRepository<>();
-    private static final Repository<Pago, UUID> PAGO_REPOSITORY = new InMemoryRepository<>();
+    private static final CommandDispatcher<Representacion, UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_PUBLISHER);
+    private static final CommandDispatcher<Reserva, UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_PUBLISHER);
+    private static final CommandDispatcher<Cliente, String> CLIENTE_DISPATCHER = new OccCommandDispatcher<>(CLIENTE_PUBLISHER);
+    private static final CommandDispatcher<Pago, UUID> PAGO_DISPATCHER = new OccCommandDispatcher<>(PAGO_PUBLISHER);
 
-    private static final CommandDispatcher<Representacion, UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_REPOSITORY, REPRESENTACION_PUBLISHER);
-    private static final CommandDispatcher<Reserva, UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_REPOSITORY, RESERVA_PUBLISHER);
-    private static final CommandDispatcher<Cliente, String> CLIENTE_DISPATCHER = new OccCommandDispatcher<>(CLIENTE_REPOSITORY, CLIENTE_PUBLISHER);
-    private static final CommandDispatcher<Pago, UUID> PAGO_DISPATCHER = new OccCommandDispatcher<>(PAGO_REPOSITORY, PAGO_PUBLISHER);
+    private static final Repository<Representacion, UUID> REPRESENTACION_REPOSITORY = RepositoryFactory.getRepository(Representacion.class);
+    private static final Repository<Reserva, UUID> RESERVA_REPOSITORY = RepositoryFactory.getRepository(Reserva.class);
+    private static final Repository<Cliente, String> CLIENTE_REPOSITORY = RepositoryFactory.getRepository(Cliente.class);
+    private static final Repository<Pago, UUID> PAGO_REPOSITORY = RepositoryFactory.getRepository(Pago.class);
 
-    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(
-            RESERVA_REPOSITORY, CLIENTE_REPOSITORY,
-            RESERVA_DISPATCHER, CLIENTE_DISPATCHER, PAGO_DISPATCHER);
+    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(RESERVA_DISPATCHER, CLIENTE_DISPATCHER, PAGO_DISPATCHER);
 
     @BeforeClass
     public static void setup() {
-        REPRESENTACION_PUBLISHER.registerEventConsumer(new RepresentacionEventConsumer(REPRESENTACION_REPOSITORY));
-        RESERVA_PUBLISHER.registerEventConsumer(new ReservaEventConsumer(RESERVA_REPOSITORY));
-        CLIENTE_PUBLISHER.registerEventConsumer(new ClienteEventConsumer(CLIENTE_REPOSITORY));
-        PAGO_PUBLISHER.registerEventConsumer(new PagoEventConsumer(PAGO_REPOSITORY));
+        REPRESENTACION_PUBLISHER.registerEventConsumer(new RepresentacionEventConsumer());
+        RESERVA_PUBLISHER.registerEventConsumer(new ReservaEventConsumer());
+        CLIENTE_PUBLISHER.registerEventConsumer(new ClienteEventConsumer());
+        PAGO_PUBLISHER.registerEventConsumer(new PagoEventConsumer());
 
         REPRESENTACION_PUBLISHER.registerEventConsumer(SUT.getRepresentacionEventConsumer());
         RESERVA_PUBLISHER.registerEventConsumer(SUT.getReservaEventConsumer());

@@ -3,6 +3,7 @@ package com.autentia.tutoriales.reservas.teatro.command.representacion;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -11,8 +12,8 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
 
     private final Repository<Representacion, UUID> repository;
 
-    public RepresentacionEventConsumer(final Repository<Representacion, UUID> repository) {
-        this.repository = repository;
+    public RepresentacionEventConsumer() {
+        repository = RepositoryFactory.getRepository(Representacion.class);
     }
 
     @Override

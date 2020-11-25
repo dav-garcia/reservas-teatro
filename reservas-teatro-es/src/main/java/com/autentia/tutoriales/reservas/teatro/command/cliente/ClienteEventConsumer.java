@@ -3,6 +3,7 @@ package com.autentia.tutoriales.reservas.teatro.command.cliente;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 
 import java.util.ArrayList;
 
@@ -10,8 +11,8 @@ public class ClienteEventConsumer implements EventConsumer<String> {
 
     private final Repository<Cliente, String> clienteRepository;
 
-    public ClienteEventConsumer(Repository<Cliente, String> clienteRepository) {
-        this.clienteRepository = clienteRepository;
+    public ClienteEventConsumer() {
+        clienteRepository = RepositoryFactory.getRepository(Cliente.class);
     }
 
     @Override

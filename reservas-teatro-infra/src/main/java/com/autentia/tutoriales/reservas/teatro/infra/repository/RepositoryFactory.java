@@ -14,5 +14,9 @@ public abstract class RepositoryFactory {
         return InstanceHolder.INSTANCE;
     }
 
-    public abstract <T extends Entity<U>, U> Repository<T, U> getRepository(final Class<T> type);
+    public static <T extends Entity<U>, U> Repository<T, U> getRepository(final Class<T> type) {
+        return getInstance().get(type);
+    }
+
+    public abstract <T extends Entity<U>, U> Repository<T, U> get(final Class<T> type);
 }

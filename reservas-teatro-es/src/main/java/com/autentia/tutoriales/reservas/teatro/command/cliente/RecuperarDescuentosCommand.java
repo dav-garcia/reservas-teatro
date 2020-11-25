@@ -2,7 +2,7 @@ package com.autentia.tutoriales.reservas.teatro.command.cliente;
 
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.util.UUID;
@@ -15,7 +15,8 @@ public class RecuperarDescuentosCommand implements Command<Cliente, String> {
     UUID deReserva;
 
     @Override
-    public void execute(final Repository<Cliente, String> repository, final EventPublisher<String> eventPublisher) {
+    public void execute(final EventPublisher<String> eventPublisher) {
+        final var repository = RepositoryFactory.getRepository(Cliente.class);
         final var cliente = repository.load(aggregateRootId).orElseThrow();
         final var descuentos = cliente.getDescuentosAplicados(deReserva).stream()
                 .map(Descuento::getId)
