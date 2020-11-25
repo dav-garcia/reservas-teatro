@@ -8,7 +8,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 /**
  * Un comando para cambiar el estado de una agregada
  */
-public interface Command<T extends AggregateRoot<U>, U> {
+public interface Command<U> {
 
     /**
      * @return identificador de la instancia de agregada sobre la que se ejecuta el comando

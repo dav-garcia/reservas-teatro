@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-public class SuscribirClienteCommand implements Command<Cliente, String> {
+public class SuscribirClienteCommand implements Command<String> {
 
     private static final String DESCRIPCION_DESCUENTO = "Descuento por fidelización";
     private static final int VALOR_DESCUENTO = 10;

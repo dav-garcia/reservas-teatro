@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Value
-public class CrearRepresentacionCommand implements Command<Representacion, UUID> {
+public class CrearRepresentacionCommand implements Command<UUID> {
 
     UUID aggregateRootId;
     ZonedDateTime cuando;

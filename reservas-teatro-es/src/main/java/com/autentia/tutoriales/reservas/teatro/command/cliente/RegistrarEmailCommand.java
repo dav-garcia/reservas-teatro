@@ -6,7 +6,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactor
 import lombok.Value;
 
 @Value
-public class RegistrarEmailCommand implements Command<Cliente, String> {
+public class RegistrarEmailCommand implements Command<String> {
 
     String aggregateRootId;
 

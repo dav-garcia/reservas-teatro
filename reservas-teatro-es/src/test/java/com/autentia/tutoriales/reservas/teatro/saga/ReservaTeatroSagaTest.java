@@ -48,10 +48,10 @@ public class ReservaTeatroSagaTest {
     private static final InMemoryEventPublisher<String> CLIENTE_PUBLISHER = new InMemoryEventPublisher<>();
     private static final InMemoryEventPublisher<UUID> PAGO_PUBLISHER = new InMemoryEventPublisher<>();
 
-    private static final CommandDispatcher<Representacion, UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_PUBLISHER);
-    private static final CommandDispatcher<Reserva, UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_PUBLISHER);
-    private static final CommandDispatcher<Cliente, String> CLIENTE_DISPATCHER = new OccCommandDispatcher<>(CLIENTE_PUBLISHER);
-    private static final CommandDispatcher<Pago, UUID> PAGO_DISPATCHER = new OccCommandDispatcher<>(PAGO_PUBLISHER);
+    private static final CommandDispatcher<UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_PUBLISHER);
+    private static final CommandDispatcher<UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_PUBLISHER);
+    private static final CommandDispatcher<String> CLIENTE_DISPATCHER = new OccCommandDispatcher<>(CLIENTE_PUBLISHER);
+    private static final CommandDispatcher<UUID> PAGO_DISPATCHER = new OccCommandDispatcher<>(PAGO_PUBLISHER);
 
     private static final Repository<Representacion, UUID> REPRESENTACION_REPOSITORY = RepositoryFactory.getRepository(Representacion.class);
     private static final Repository<Reserva, UUID> RESERVA_REPOSITORY = RepositoryFactory.getRepository(Reserva.class);

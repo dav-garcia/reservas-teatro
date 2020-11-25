@@ -9,7 +9,7 @@ import lombok.Value;
 import java.util.UUID;
 
 @Value
-public class CancelarReservaCommand implements Command<Reserva, UUID> {
+public class CancelarReservaCommand implements Command<UUID> {
 
     UUID aggregateRootId;
     boolean abandonada;

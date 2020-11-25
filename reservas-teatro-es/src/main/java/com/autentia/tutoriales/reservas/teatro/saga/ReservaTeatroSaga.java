@@ -6,7 +6,6 @@ import com.autentia.tutoriales.reservas.teatro.command.cliente.Descuento;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.DescuentosAplicadosEvent;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.RegistrarEmailCommand;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
-import com.autentia.tutoriales.reservas.teatro.command.pago.Pago;
 import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPagoCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.ButacasSeleccionadasEvent;
@@ -38,9 +37,9 @@ public class ReservaTeatroSaga implements Closeable {
 
     private static final int TIMEOUT_RESERVA = 30 * 60;
 
-    private final CommandDispatcher<Reserva, UUID> reservaDispatcher;
-    private final CommandDispatcher<Cliente, String> clienteDispatcher;
-    private final CommandDispatcher<Pago, UUID> pagoDispatcher;
+    private final CommandDispatcher<UUID> reservaDispatcher;
+    private final CommandDispatcher<String> clienteDispatcher;
+    private final CommandDispatcher<UUID> pagoDispatcher;
 
     private final Repository<Reserva, UUID> reservaRepository;
     private final Repository<Cliente, String> clienteRepository;
@@ -54,9 +53,9 @@ public class ReservaTeatroSaga implements Closeable {
 
     private int timeout;
 
-    public ReservaTeatroSaga(final CommandDispatcher<Reserva, UUID> reservaDispatcher,
-                             final CommandDispatcher<Cliente, String> clienteDispatcher,
-                             final CommandDispatcher<Pago, UUID> pagoDispatcher) {
+    public ReservaTeatroSaga(final CommandDispatcher<UUID> reservaDispatcher,
+                             final CommandDispatcher<String> clienteDispatcher,
+                             final CommandDispatcher<UUID> pagoDispatcher) {
         this.reservaDispatcher = reservaDispatcher;
         this.clienteDispatcher = clienteDispatcher;
         this.pagoDispatcher = pagoDispatcher;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-public class ProponerPagoCommand implements Command<Pago, UUID> {
+public class ProponerPagoCommand implements Command<UUID> {
 
     UUID aggregateRootId;
     UUID reserva;

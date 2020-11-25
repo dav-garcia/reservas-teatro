@@ -9,7 +9,7 @@ import lombok.Value;
 import java.util.UUID;
 
 @Value
-public class ConfirmarReservaCommand implements Command<Reserva, UUID> {
+public class ConfirmarReservaCommand implements Command<UUID> {
 
     UUID aggregateRootId;
 

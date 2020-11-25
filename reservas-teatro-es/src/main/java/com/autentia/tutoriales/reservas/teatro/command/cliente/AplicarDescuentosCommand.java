@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Value
-public class AplicarDescuentosCommand implements Command<Cliente, String> {
+public class AplicarDescuentosCommand implements Command<String> {
 
     String aggregateRootId;
     UUID enReserva;

@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Value
-public class SeleccionarButacasCommand implements Command<Representacion, UUID> {
+public class SeleccionarButacasCommand implements Command<UUID> {
 
     UUID aggregateRootId;
     UUID paraReserva;

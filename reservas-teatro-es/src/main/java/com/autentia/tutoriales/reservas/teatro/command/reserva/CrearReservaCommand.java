@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Value
-public class CrearReservaCommand implements Command<Reserva, UUID> {
+public class CrearReservaCommand implements Command<UUID> {
 
     UUID aggregateRootId;
     UUID representacion;
