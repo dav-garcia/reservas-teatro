@@ -1,6 +1,6 @@
-package com.autentia.tutoriales.reservas.teatro.adapter.payment.autoaccept;
+package com.autentia.tutoriales.reservas.teatro.infra.payment.autoaccept;
 
-import com.autentia.tutoriales.reservas.teatro.adapter.payment.PaymentGateway;
+import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGateway;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.HashMap;

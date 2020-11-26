@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.adapter.payment;
+package com.autentia.tutoriales.reservas.teatro.infra.payment;
 
 public interface PaymentGateway {
 

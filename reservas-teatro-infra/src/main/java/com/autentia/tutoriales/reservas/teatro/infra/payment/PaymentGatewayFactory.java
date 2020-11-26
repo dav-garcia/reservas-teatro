@@ -1,6 +1,6 @@
-package com.autentia.tutoriales.reservas.teatro.adapter.payment;
+package com.autentia.tutoriales.reservas.teatro.infra.payment;
 
-import com.autentia.tutoriales.reservas.teatro.adapter.payment.autoaccept.AutoAcceptPaymentGatewayFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.payment.autoaccept.AutoAcceptPaymentGatewayFactory;
 
 @SuppressWarnings("java:S1610")
 public abstract class PaymentGatewayFactory {

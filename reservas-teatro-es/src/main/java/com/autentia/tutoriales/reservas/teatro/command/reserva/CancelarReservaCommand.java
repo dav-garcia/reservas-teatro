@@ -13,14 +13,14 @@ import java.util.UUID;
 public class CancelarReservaCommand implements Command<UUID> {
 
     UUID aggregateRootId;
-    boolean abandonada;
 
     @Override
     public void execute(EventPublisher<UUID> eventPublisher) {
         final var repository = RepositoryFactory.getRepository(Reserva.class);
         final var reserva = repository.load(aggregateRootId)
-                .orElseThrow(() -> new CommandNotValidException("No existe la reserva"));
+                .filter(r -> r.getEstado() != Reserva.Estado.PAGADA)
+                .orElseThrow(() -> new CommandNotValidException("No se puede cancelar una reserva pagada"));
 
-        eventPublisher.tryPublish(reserva.getVersion(), new ReservaCanceladaEvent(aggregateRootId, abandonada));
+        eventPublisher.tryPublish(reserva.getVersion(), new ReservaCanceladaEvent(aggregateRootId));
     }
 }

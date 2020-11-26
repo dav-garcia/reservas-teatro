@@ -3,15 +3,15 @@ package com.autentia.tutoriales.reservas.teatro.saga;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.AplicarDescuentosCommand;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.Cliente;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.Descuento;
-import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentosAplicadosEvent;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.RegistrarEmailCommand;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
 import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPagoIdempotentCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
-import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
-import com.autentia.tutoriales.reservas.teatro.command.reserva.CancelarReservaCommand;
+import com.autentia.tutoriales.reservas.teatro.command.reserva.AbandonarReservaCommand;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.CrearReservaCommand;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.Reserva;
+import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentosAplicadosEvent;
+import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCanceladaEvent;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaConfirmadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
@@ -112,7 +112,7 @@ public class ReservaTeatroSaga implements Closeable {
         // TODO: Recordar cancelar la tarea cuando se pague la reserva
         tareasTimeout.computeIfAbsent(event.getParaReserva(), i -> taskScheduler.schedule(() -> {
             LOG.info("Cancelando reserva {} por timeout", i);
-            reservaDispatcher.dispatch(new CancelarReservaCommand(event.getParaReserva(), true));
+            reservaDispatcher.dispatch(new AbandonarReservaCommand(event.getParaReserva()));
         }, Instant.now().plusSeconds(timeout)));
 
         clienteDispatcher.dispatch(new RegistrarEmailCommand(event.getEmail()));

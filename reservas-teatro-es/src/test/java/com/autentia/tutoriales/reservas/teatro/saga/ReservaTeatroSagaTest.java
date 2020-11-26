@@ -94,6 +94,7 @@ public class ReservaTeatroSagaTest {
         assertThat(reserva.getVersion()).isEqualTo(1L);
         assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A2, B3);
         assertThat(reserva.getCliente()).isEqualTo(email);
+        assertThat(reserva.getEstado()).isEqualTo(Reserva.Estado.CREADA);
     }
 
     @Test
@@ -107,7 +108,9 @@ public class ReservaTeatroSagaTest {
             REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
             REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
 
-            await().atMost(2, TimeUnit.SECONDS).until(() -> RESERVA_REPOSITORY.load(idReserva).isEmpty());
+            await().atMost(2, TimeUnit.SECONDS).until(() -> RESERVA_REPOSITORY.load(idReserva)
+                    .filter(r -> r.getEstado() == Reserva.Estado.ABANDONADA)
+                    .isPresent());
             // TODO: Assert butacas devueltas
         } finally {
             SUT.setTimeout(null);
@@ -138,7 +141,7 @@ public class ReservaTeatroSagaTest {
         assertThat(reserva.getVersion()).isEqualTo(2L);
         assertThat(reserva.getButacas()).containsExactlyInAnyOrder(A1, A2, B3);
         assertThat(reserva.getCliente()).isEqualTo(email);
-        assertThat(reserva.isConfirmada()).isTrue();
+        assertThat(reserva.getEstado()).isEqualTo(Reserva.Estado.CONFIRMADA);
         assertThat(pago.getVersion()).isEqualTo(1L);
         assertThat(pago.getReserva()).isEqualTo(idReserva);
         assertThat(pago.getCliente()).isEqualTo(email);

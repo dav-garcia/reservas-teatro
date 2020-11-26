@@ -1,7 +1,7 @@
-package com.autentia.tutoriales.reservas.teatro.adapter.payment.autoaccept;
+package com.autentia.tutoriales.reservas.teatro.infra.payment.autoaccept;
 
-import com.autentia.tutoriales.reservas.teatro.adapter.payment.PaymentGateway;
-import com.autentia.tutoriales.reservas.teatro.adapter.payment.PaymentGatewayFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGateway;
+import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGatewayFactory;
 
 public class AutoAcceptPaymentGatewayFactory extends PaymentGatewayFactory {
 

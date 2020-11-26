@@ -1,11 +1,13 @@
 package com.autentia.tutoriales.reservas.teatro.command.reserva;
 
+import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaAbandonadaEvent;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCanceladaEvent;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaConfirmadaEvent;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCreadaEvent;
+import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaPagadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 
 import java.util.UUID;
@@ -23,9 +25,13 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
         if (event instanceof ReservaCreadaEvent) {
             apply(version, (ReservaCreadaEvent) event);
         } else if (event instanceof ReservaConfirmadaEvent) {
-            apply(version, (ReservaConfirmadaEvent) event);
+            applyEstado(version, event.getAggregateRootId(), Reserva.Estado.CONFIRMADA);
+        } else if (event instanceof ReservaAbandonadaEvent) {
+            applyEstado(version, event.getAggregateRootId(), Reserva.Estado.ABANDONADA);
         } else if (event instanceof ReservaCanceladaEvent) {
-            apply(version, (ReservaCanceladaEvent) event);
+            applyEstado(version, event.getAggregateRootId(), Reserva.Estado.CANCELADA);
+        } else if (event instanceof ReservaPagadaEvent) {
+            applyEstado(version, event.getAggregateRootId(), Reserva.Estado.PAGADA);
         }
     }
 
@@ -35,22 +41,18 @@ public class ReservaEventConsumer implements EventConsumer<UUID> {
                 .version(version)
                 .butacas(event.getButacas())
                 .cliente(event.getCliente())
+                .estado(Reserva.Estado.CREADA)
                 .build();
 
         repository.save(reserva);
     }
 
-    private void apply(final long version, final ReservaConfirmadaEvent event) {
-        final var reserva = repository.load(event.getAggregateRootId()).orElseThrow();
+    private void applyEstado(final long version, final UUID id, final Reserva.Estado estado) {
+        final var reserva = repository.load(id).orElseThrow();
 
         reserva.setVersion(version);
-        reserva.setConfirmada(true);
+        reserva.setEstado(estado);
 
         repository.save(reserva);
-    }
-
-    @SuppressWarnings("java:S1172")
-    private void apply(final long version, final ReservaCanceladaEvent event) {
-        repository.delete(event.getAggregateRootId());
     }
 }

@@ -17,9 +17,17 @@ import java.util.UUID;
 @Builder(builderClassName = "Builder")
 public class Reserva implements AggregateRoot<UUID> {
 
+    public enum Estado {
+        CREADA,
+        CONFIRMADA,
+        PAGADA,
+        ABANDONADA,
+        CANCELADA
+    }
+
     private final UUID id;
     private long version;
     private final Set<Butaca> butacas;
     private final String cliente;
-    private boolean confirmada;
+    private Estado estado;
 }
