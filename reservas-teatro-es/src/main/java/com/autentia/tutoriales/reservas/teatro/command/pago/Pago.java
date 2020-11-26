@@ -17,9 +17,9 @@ import java.util.UUID;
 public class Pago implements AggregateRoot<UUID> {
 
     private final UUID id;
-    private final long version;
+    private long version;
     private final UUID reserva;
     private final String cliente;
     private List<Concepto> conceptos;
-    private String idPasarelaPago;
+    private String codigoPago;
 }

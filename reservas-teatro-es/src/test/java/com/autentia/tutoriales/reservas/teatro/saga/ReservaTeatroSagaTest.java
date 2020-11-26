@@ -73,7 +73,7 @@ public class ReservaTeatroSagaTest {
     }
 
     @Test
-    public void givenSeleccionarButacasThenReservaCreada() {
+    public void givenButacasSeleccionadasThenReservaCreada() {
         final var idRepresentacion = UUID.randomUUID();
         final var idReserva = UUID.randomUUID();
         final var email = idReserva.toString() + "@test.com";
@@ -97,7 +97,7 @@ public class ReservaTeatroSagaTest {
     }
 
     @Test
-    public void givenSeleccionarButacasWhenTimeoutThenReservaCancelada() {
+    public void givenButacasSeleccionadasWhenTimeoutThenReservaCancelada() {
         SUT.setTimeout(1);
         try {
             final var idRepresentacion = UUID.randomUUID();
@@ -115,7 +115,7 @@ public class ReservaTeatroSagaTest {
     }
 
     @Test
-    public void givenConfirmarReservaThenPagoPropuesto() {
+    public void givenReservaConfirmadaThenPagoPropuesto() {
         final var idRepresentacion = UUID.randomUUID();
         final var idReserva = UUID.randomUUID();
         final var email = idReserva.toString() + "@test.com";
@@ -147,6 +147,6 @@ public class ReservaTeatroSagaTest {
                 new Concepto("Butaca A2", 20),
                 new Concepto("Butaca B3", 30),
                 new Concepto("Descuento por fidelización", -10));
-        assertThat(pago.getIdPasarelaPago()).isNotNull();
+        assertThat(pago.getCodigoPago()).isNotNull();
     }
 }

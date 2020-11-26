@@ -10,12 +10,8 @@ public abstract class RepositoryFactory {
         public static final RepositoryFactory INSTANCE = new InMemoryRepositoryFactory();
     }
 
-    public static RepositoryFactory getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
     public static <T extends Entity<U>, U> Repository<T, U> getRepository(final Class<T> type) {
-        return getInstance().get(type);
+        return InstanceHolder.INSTANCE.get(type);
     }
 
     public abstract <T extends Entity<U>, U> Repository<T, U> get(final Class<T> type);

@@ -6,7 +6,7 @@ import com.autentia.tutoriales.reservas.teatro.command.cliente.Descuento;
 import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentosAplicadosEvent;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.RegistrarEmailCommand;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
-import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPagoCommand;
+import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPagoIdempotentCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.CancelarReservaCommand;
@@ -143,7 +143,8 @@ public class ReservaTeatroSaga implements Closeable {
             }
         }
 
-        pagoDispatcher.dispatch(new ProponerPagoCommand(UUID.randomUUID(), event.getEnReserva(), event.getAggregateRootId(), conceptos));
+        pagoDispatcher.dispatch(new ProponerPagoIdempotentCommand(
+                UUID.randomUUID(), event.getEnReserva(), event.getAggregateRootId(), conceptos));
     }
 
     private void cancelarTareaTimeout(final ReservaCanceladaEvent event) {
