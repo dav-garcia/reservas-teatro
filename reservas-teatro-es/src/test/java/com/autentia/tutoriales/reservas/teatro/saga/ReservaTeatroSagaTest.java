@@ -58,7 +58,8 @@ public class ReservaTeatroSagaTest {
     private static final Repository<Cliente, String> CLIENTE_REPOSITORY = RepositoryFactory.getRepository(Cliente.class);
     private static final Repository<Pago, UUID> PAGO_REPOSITORY = RepositoryFactory.getRepository(Pago.class);
 
-    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(RESERVA_DISPATCHER, CLIENTE_DISPATCHER, PAGO_DISPATCHER);
+    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(
+            REPRESENTACION_DISPATCHER, RESERVA_DISPATCHER, CLIENTE_DISPATCHER, PAGO_DISPATCHER);
 
     @BeforeClass
     public static void setup() {
@@ -70,6 +71,7 @@ public class ReservaTeatroSagaTest {
         REPRESENTACION_PUBLISHER.registerEventConsumer(SUT.getRepresentacionEventConsumer());
         RESERVA_PUBLISHER.registerEventConsumer(SUT.getReservaEventConsumer());
         CLIENTE_PUBLISHER.registerEventConsumer(SUT.getClienteEventConsumer());
+        PAGO_PUBLISHER.registerEventConsumer(SUT.getPagoEventConsumer());
     }
 
     @Test
@@ -111,7 +113,10 @@ public class ReservaTeatroSagaTest {
             await().atMost(2, TimeUnit.SECONDS).until(() -> RESERVA_REPOSITORY.load(idReserva)
                     .filter(r -> r.getEstado() == Reserva.Estado.ABANDONADA)
                     .isPresent());
-            // TODO: Assert butacas devueltas
+
+            final var representacion = REPRESENTACION_REPOSITORY.load(idRepresentacion).orElseThrow();
+
+            assertThat(representacion.getButacasLibres()).contains(A1, A2, A3, B1, B2, B3);
         } finally {
             SUT.setTimeout(null);
         }

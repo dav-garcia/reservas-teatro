@@ -1,5 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
+import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasLiberadasEvent;
 import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.event.representacion.RepresentacionCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
@@ -24,6 +25,8 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
             apply(version, (RepresentacionCreadaEvent) event);
         } else if (event instanceof ButacasSeleccionadasEvent) {
             apply(version, (ButacasSeleccionadasEvent) event);
+        } else if (event instanceof ButacasLiberadasEvent) {
+            apply(version, (ButacasLiberadasEvent) event);
         }
     }
 
@@ -44,6 +47,15 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
 
         representacion.setVersion(version);
         representacion.getButacasLibres().removeAll(event.getButacas());
+
+        repository.save(representacion);
+    }
+
+    private void apply(final long version, final ButacasLiberadasEvent event) {
+        final var representacion = repository.load(event.getAggregateRootId()).orElseThrow();
+
+        representacion.setVersion(version);
+        representacion.getButacasLibres().addAll(event.getButacas());
 
         repository.save(representacion);
     }

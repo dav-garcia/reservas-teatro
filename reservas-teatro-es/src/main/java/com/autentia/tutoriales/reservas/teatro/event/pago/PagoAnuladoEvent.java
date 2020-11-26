@@ -6,7 +6,7 @@ import lombok.Value;
 import java.util.UUID;
 
 @Value
-public class PagoConfirmadoEvent implements Event<UUID> {
+public class PagoAnuladoEvent implements Event<UUID> {
 
     UUID aggregateRootId;
     UUID reserva;
