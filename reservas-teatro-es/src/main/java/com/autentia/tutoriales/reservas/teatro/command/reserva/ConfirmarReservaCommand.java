@@ -4,7 +4,6 @@ import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaConfirmadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.util.UUID;
@@ -16,8 +15,7 @@ public class ConfirmarReservaCommand implements Command<UUID> {
 
     @Override
     public void execute(final EventPublisher<UUID> eventPublisher) {
-        final var repository = RepositoryFactory.getRepository(Reserva.class);
-        final var reserva = repository.load(aggregateRootId)
+        final var reserva = ReservaCommandSupport.getRepository().load(aggregateRootId)
                 .filter(r -> r.getEstado() == Reserva.Estado.CREADA)
                 .orElseThrow(() -> new CommandNotValidException("No se puede confirmar la reserva"));
 

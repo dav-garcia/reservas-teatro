@@ -4,7 +4,6 @@ import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.util.Set;
@@ -20,8 +19,7 @@ public class SeleccionarButacasCommand implements Command<UUID> {
 
     @Override
     public void execute(final EventPublisher<UUID> eventPublisher) {
-        final var repository = RepositoryFactory.getRepository(Representacion.class);
-        final var representacion = repository.load(aggregateRootId)
+        final var representacion = RepresentacionCommandSupport.getRepository().load(aggregateRootId)
                 .filter(r -> r.getButacasLibres().containsAll(butacas))
                 .orElseThrow(() -> new CommandNotValidException("Representación no existe o las butacas no están libres"));
 

@@ -1,27 +1,28 @@
 package com.autentia.tutoriales.reservas.teatro.saga;
 
 import com.autentia.tutoriales.reservas.teatro.command.cliente.Cliente;
-import com.autentia.tutoriales.reservas.teatro.command.cliente.ClienteEventConsumer;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.SuscribirClienteCommand;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Pago;
-import com.autentia.tutoriales.reservas.teatro.command.pago.PagoEventConsumer;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.CrearRepresentacionCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Representacion;
-import com.autentia.tutoriales.reservas.teatro.command.representacion.RepresentacionEventConsumer;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Sala;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.SeleccionarButacasCommand;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.ConfirmarReservaCommand;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.Reserva;
-import com.autentia.tutoriales.reservas.teatro.command.reserva.ReservaEventConsumer;
+import com.autentia.tutoriales.reservas.teatro.configuration.ClienteConfiguration;
+import com.autentia.tutoriales.reservas.teatro.configuration.PagoConfiguration;
+import com.autentia.tutoriales.reservas.teatro.configuration.RepresentacionConfiguration;
+import com.autentia.tutoriales.reservas.teatro.configuration.ReservaConfiguration;
+import com.autentia.tutoriales.reservas.teatro.configuration.SagaConfiguration;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.dispatch.occ.OccCommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.event.inmemory.InMemoryEventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -33,6 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(
+        classes = {RepresentacionConfiguration.class, ReservaConfiguration.class, ClienteConfiguration.class, PagoConfiguration.class, SagaConfiguration.class},
+        webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ReservaTeatroSagaTest {
 
     private static final Butaca A1 = new Butaca("A", 1, 10);
@@ -43,36 +48,32 @@ public class ReservaTeatroSagaTest {
     private static final Butaca B3 = new Butaca("B", 3, 30);
     private static final Sala SALA = new Sala("SALA", Set.of(A1, A2, A3, B1, B2, B3));
 
-    private static final InMemoryEventPublisher<UUID> REPRESENTACION_PUBLISHER = new InMemoryEventPublisher<>();
-    private static final InMemoryEventPublisher<UUID> RESERVA_PUBLISHER = new InMemoryEventPublisher<>();
-    private static final InMemoryEventPublisher<String> CLIENTE_PUBLISHER = new InMemoryEventPublisher<>();
-    private static final InMemoryEventPublisher<UUID> PAGO_PUBLISHER = new InMemoryEventPublisher<>();
+    @Autowired
+    private CommandDispatcher<UUID> representacionDispatcher;
 
-    private static final CommandDispatcher<UUID> REPRESENTACION_DISPATCHER = new OccCommandDispatcher<>(REPRESENTACION_PUBLISHER);
-    private static final CommandDispatcher<UUID> RESERVA_DISPATCHER = new OccCommandDispatcher<>(RESERVA_PUBLISHER);
-    private static final CommandDispatcher<String> CLIENTE_DISPATCHER = new OccCommandDispatcher<>(CLIENTE_PUBLISHER);
-    private static final CommandDispatcher<UUID> PAGO_DISPATCHER = new OccCommandDispatcher<>(PAGO_PUBLISHER);
+    @Autowired
+    private CommandDispatcher<UUID> reservaDispatcher;
 
-    private static final Repository<Representacion, UUID> REPRESENTACION_REPOSITORY = RepositoryFactory.getRepository(Representacion.class);
-    private static final Repository<Reserva, UUID> RESERVA_REPOSITORY = RepositoryFactory.getRepository(Reserva.class);
-    private static final Repository<Cliente, String> CLIENTE_REPOSITORY = RepositoryFactory.getRepository(Cliente.class);
-    private static final Repository<Pago, UUID> PAGO_REPOSITORY = RepositoryFactory.getRepository(Pago.class);
+    @Autowired
+    private CommandDispatcher<String> clienteDispatcher;
 
-    private static final ReservaTeatroSaga SUT = new ReservaTeatroSaga(
-            REPRESENTACION_DISPATCHER, RESERVA_DISPATCHER, CLIENTE_DISPATCHER, PAGO_DISPATCHER);
+    @Autowired
+    private CommandDispatcher<UUID> pagoDispatcher;
 
-    @BeforeClass
-    public static void setup() {
-        REPRESENTACION_PUBLISHER.registerEventConsumer(new RepresentacionEventConsumer());
-        RESERVA_PUBLISHER.registerEventConsumer(new ReservaEventConsumer());
-        CLIENTE_PUBLISHER.registerEventConsumer(new ClienteEventConsumer());
-        PAGO_PUBLISHER.registerEventConsumer(new PagoEventConsumer());
+    @Autowired
+    private Repository<Representacion, UUID> representacionRepository;
 
-        REPRESENTACION_PUBLISHER.registerEventConsumer(SUT.getRepresentacionEventConsumer());
-        RESERVA_PUBLISHER.registerEventConsumer(SUT.getReservaEventConsumer());
-        CLIENTE_PUBLISHER.registerEventConsumer(SUT.getClienteEventConsumer());
-        PAGO_PUBLISHER.registerEventConsumer(SUT.getPagoEventConsumer());
-    }
+    @Autowired
+    private Repository<Reserva, UUID> reservaRepository;
+
+    @Autowired
+    private Repository<Cliente, String> clienteRepository;
+
+    @Autowired
+    private Repository<Pago, UUID> pagoRepository;
+
+    @Autowired
+    private ReservaTeatroSaga sut;
 
     @Test
     public void givenButacasSeleccionadasThenReservaCreada() {
@@ -80,12 +81,12 @@ public class ReservaTeatroSagaTest {
         final var idReserva = UUID.randomUUID();
         final var email = idReserva.toString() + "@test.com";
 
-        REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
-        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
+        representacionDispatcher.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
+        representacionDispatcher.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
 
-        final var representacion = REPRESENTACION_REPOSITORY.load(idRepresentacion).orElseThrow();
-        final var cliente = CLIENTE_REPOSITORY.load(email).orElseThrow();
-        final var reserva = RESERVA_REPOSITORY.load(idReserva).orElseThrow();
+        final var representacion = representacionRepository.load(idRepresentacion).orElseThrow();
+        final var cliente = clienteRepository.load(email).orElseThrow();
+        final var reserva = reservaRepository.load(idReserva).orElseThrow();
 
         assertThat(representacion.getVersion()).isEqualTo(2L);
         assertThat(representacion.getButacasLibres()).containsExactlyInAnyOrder(A3, B1, B2);
@@ -101,24 +102,24 @@ public class ReservaTeatroSagaTest {
 
     @Test
     public void givenButacasSeleccionadasWhenTimeoutThenReservaCancelada() {
-        SUT.setTimeout(1);
+        sut.setTimeout(1);
         try {
             final var idRepresentacion = UUID.randomUUID();
             final var idReserva = UUID.randomUUID();
             final var email = idReserva.toString() + "@test.com";
 
-            REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
-            REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
+            representacionDispatcher.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
+            representacionDispatcher.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
 
-            await().atMost(2, TimeUnit.SECONDS).until(() -> RESERVA_REPOSITORY.load(idReserva)
+            await().atMost(2, TimeUnit.SECONDS).until(() -> reservaRepository.load(idReserva)
                     .filter(r -> r.getEstado() == Reserva.Estado.ABANDONADA)
                     .isPresent());
 
-            final var representacion = REPRESENTACION_REPOSITORY.load(idRepresentacion).orElseThrow();
+            final var representacion = representacionRepository.load(idRepresentacion).orElseThrow();
 
             assertThat(representacion.getButacasLibres()).contains(A1, A2, A3, B1, B2, B3);
         } finally {
-            SUT.setTimeout(null);
+            sut.setTimeout(null);
         }
     }
 
@@ -128,14 +129,14 @@ public class ReservaTeatroSagaTest {
         final var idReserva = UUID.randomUUID();
         final var email = idReserva.toString() + "@test.com";
 
-        REPRESENTACION_DISPATCHER.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
-        REPRESENTACION_DISPATCHER.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
-        CLIENTE_DISPATCHER.dispatch(new SuscribirClienteCommand(email, "Cliente suscrito"));
-        RESERVA_DISPATCHER.dispatch(new ConfirmarReservaCommand(idReserva));
+        representacionDispatcher.dispatch(new CrearRepresentacionCommand(idRepresentacion, ZonedDateTime.now(), SALA));
+        representacionDispatcher.dispatch(new SeleccionarButacasCommand(idRepresentacion, idReserva, Set.of(A1, A2, B3), email));
+        clienteDispatcher.dispatch(new SuscribirClienteCommand(email, "Cliente suscrito"));
+        reservaDispatcher.dispatch(new ConfirmarReservaCommand(idReserva));
 
-        final var cliente = CLIENTE_REPOSITORY.load(email).orElseThrow();
-        final var reserva = RESERVA_REPOSITORY.load(idReserva).orElseThrow();
-        final var pago = PAGO_REPOSITORY.find(p -> p.getReserva().equals(idReserva)).get(0);
+        final var cliente = clienteRepository.load(email).orElseThrow();
+        final var reserva = reservaRepository.load(idReserva).orElseThrow();
+        final var pago = pagoRepository.find(p -> p.getReserva().equals(idReserva)).get(0);
 
         assertThat(cliente.getVersion()).isEqualTo(4L);
         assertThat(cliente.isSuscrito()).isTrue();

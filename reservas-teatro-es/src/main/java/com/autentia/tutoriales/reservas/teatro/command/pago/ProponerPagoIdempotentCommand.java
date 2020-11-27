@@ -1,11 +1,9 @@
 package com.autentia.tutoriales.reservas.teatro.command.pago;
 
-import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGatewayFactory;
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -27,8 +25,7 @@ public class ProponerPagoIdempotentCommand implements Command<UUID> {
 
     @Override
     public void execute(final EventPublisher<UUID> eventPublisher) {
-        final var repository = RepositoryFactory.getRepository(Pago.class);
-        if (repository.load(aggregateRootId).isPresent()) {
+        if (PagoCommandSupport.getRepository().load(aggregateRootId).isPresent()) {
             if (codigoPago != null) {
                 cancelarPago(codigoPago);
             }
@@ -47,10 +44,10 @@ public class ProponerPagoIdempotentCommand implements Command<UUID> {
                 .mapToInt(Concepto::getPrecio)
                 .sum();
 
-        return PaymentGatewayFactory.getPaymentGateway().initiatePayment(cliente, descripcion, valor);
+        return PagoCommandSupport.getPaymentGateway().initiatePayment(cliente, descripcion, valor);
     }
 
     private void cancelarPago(final String codigoPago) {
-        PaymentGatewayFactory.getPaymentGateway().cancelPayment(codigoPago);
+        PagoCommandSupport.getPaymentGateway().cancelPayment(codigoPago);
     }
 }

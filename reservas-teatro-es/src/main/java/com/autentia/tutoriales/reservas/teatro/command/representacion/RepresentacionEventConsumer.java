@@ -4,9 +4,8 @@ import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasLiber
 import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.event.representacion.RepresentacionCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -15,8 +14,8 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
 
     private final Repository<Representacion, UUID> repository;
 
-    public RepresentacionEventConsumer() {
-        repository = RepositoryFactory.getRepository(Representacion.class);
+    public RepresentacionEventConsumer(final Repository<Representacion, UUID> repository) {
+        this.repository = repository;
     }
 
     @Override

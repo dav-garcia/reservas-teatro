@@ -25,21 +25,14 @@ import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaPagadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
+import com.autentia.tutoriales.reservas.teatro.infra.task.TaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.task.TaskSchedulerBuilder;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import java.io.Closeable;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
-public class ReservaTeatroSaga implements Closeable {
+public class ReservaTeatroSaga {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReservaTeatroSaga.class);
 
@@ -59,23 +52,25 @@ public class ReservaTeatroSaga implements Closeable {
     private final EventConsumer<String> clienteEventConsumer;
     private final EventConsumer<UUID> pagoEventConsumer;
 
-    private final Map<UUID, ScheduledFuture<?>> tareasTimeout;
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private final TaskScheduler taskScheduler;
 
     private int timeout;
 
     public ReservaTeatroSaga(final CommandDispatcher<UUID> representacionDispatcher,
                              final CommandDispatcher<UUID> reservaDispatcher,
                              final CommandDispatcher<String> clienteDispatcher,
-                             final CommandDispatcher<UUID> pagoDispatcher) {
+                             final CommandDispatcher<UUID> pagoDispatcher,
+                             final Repository<Reserva, UUID> reservaRepository,
+                             final Repository<Cliente, String> clienteRepository,
+                             final Repository<Pago, UUID> pagoRepository) {
         this.representacionDispatcher = representacionDispatcher;
         this.reservaDispatcher = reservaDispatcher;
         this.clienteDispatcher = clienteDispatcher;
         this.pagoDispatcher = pagoDispatcher;
 
-        reservaRepository = RepositoryFactory.getRepository(Reserva.class);
-        clienteRepository = RepositoryFactory.getRepository(Cliente.class);
-        pagoRepository = RepositoryFactory.getRepository(Pago.class);
+        this.reservaRepository = reservaRepository;
+        this.clienteRepository = clienteRepository;
+        this.pagoRepository = pagoRepository;
 
         representacionEventConsumer = (version, event) -> {
             if (event instanceof ButacasSeleccionadasEvent) {
@@ -111,9 +106,7 @@ public class ReservaTeatroSaga implements Closeable {
             }
         };
 
-        tareasTimeout = new ConcurrentHashMap<>();
-        taskScheduler = new TaskSchedulerBuilder().build();
-        taskScheduler.initialize();
+        taskScheduler = new TaskScheduler();
 
         timeout = TIMEOUT_RESERVA;
     }
@@ -194,22 +187,13 @@ public class ReservaTeatroSaga implements Closeable {
     }
 
     private void iniciarTareaTimeout(final UUID idReserva) {
-        tareasTimeout.computeIfAbsent(idReserva, i -> taskScheduler.schedule(() -> {
-            LOG.info("Abandonando reserva {}", i);
+        taskScheduler.scheduleTask("timeout", idReserva, () -> {
+            LOG.info("Abandonando reserva {}", idReserva);
             reservaDispatcher.dispatch(new AbandonarReservaCommand(idReserva));
-        }, Instant.now().plusSeconds(timeout)));
+        }, timeout);
     }
 
     private void detenerTareaTimeout(final UUID idReserva) {
-        final var tareaTimeout = tareasTimeout.remove(idReserva);
-        if (tareaTimeout != null) {
-            tareaTimeout.cancel(false);
-        }
-    }
-
-    @Override
-    public void close() {
-        tareasTimeout.clear();
-        taskScheduler.shutdown();
+        taskScheduler.cancelTask("timeout", idReserva);
     }
 }

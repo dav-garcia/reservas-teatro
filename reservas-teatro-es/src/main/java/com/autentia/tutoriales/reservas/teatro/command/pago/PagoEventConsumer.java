@@ -1,11 +1,10 @@
 package com.autentia.tutoriales.reservas.teatro.command.pago;
 
-import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoConfirmadoEvent;
+import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 
 import java.util.UUID;
 
@@ -13,8 +12,8 @@ public class PagoEventConsumer implements EventConsumer<UUID> {
 
     private final Repository<Pago, UUID> repository;
 
-    public PagoEventConsumer() {
-        repository = RepositoryFactory.getRepository(Pago.class);
+    public PagoEventConsumer(final Repository<Pago, UUID> repository) {
+        this.repository = repository;
     }
 
     @Override

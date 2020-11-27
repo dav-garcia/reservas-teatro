@@ -8,16 +8,15 @@ import com.autentia.tutoriales.reservas.teatro.event.cliente.EmailRegistradoEven
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 
 import java.util.ArrayList;
 
 public class ClienteEventConsumer implements EventConsumer<String> {
 
-    private final Repository<Cliente, String> clienteRepository;
+    private final Repository<Cliente, String> repository;
 
-    public ClienteEventConsumer() {
-        clienteRepository = RepositoryFactory.getRepository(Cliente.class);
+    public ClienteEventConsumer(final Repository<Cliente, String> repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -43,11 +42,11 @@ public class ClienteEventConsumer implements EventConsumer<String> {
                 .descuentos(new ArrayList<>())
                 .build();
 
-        clienteRepository.save(cliente);
+        repository.save(cliente);
     }
 
     private void apply(final long version, final ClienteSuscritoEvent event) {
-        final var cliente = clienteRepository.load(event.getAggregateRootId())
+        final var cliente = repository.load(event.getAggregateRootId())
                 .orElseGet(() -> Cliente.builder()
                         .id(event.getAggregateRootId())
                         .descuentos(new ArrayList<>())
@@ -57,11 +56,11 @@ public class ClienteEventConsumer implements EventConsumer<String> {
         cliente.setSuscrito(true);
         cliente.setNombre(event.getNombre());
 
-        clienteRepository.save(cliente);
+        repository.save(cliente);
     }
 
     private void apply(final long version, final DescuentoConcedidoEvent event) {
-        final var cliente = clienteRepository.load(event.getAggregateRootId()).orElseThrow();
+        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
 
         if (cliente.getDescuentos().stream().noneMatch(d -> d.getId().equals(event.getId()))) { // Idempotencia
             cliente.setVersion(version);
@@ -73,29 +72,29 @@ public class ClienteEventConsumer implements EventConsumer<String> {
                     .validoHasta(event.getValidoHasta())
                     .build());
 
-            clienteRepository.save(cliente);
+            repository.save(cliente);
         }
     }
 
     private void apply(final long version, final DescuentosAplicadosEvent event) {
-        final var cliente = clienteRepository.load(event.getAggregateRootId()).orElseThrow();
+        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
 
         cliente.setVersion(version);
         cliente.getDescuentos().stream()
                 .filter(d -> event.getDescuentos().contains(d.getId()))
                 .forEach(d -> d.setEnReserva(event.getEnReserva()));
 
-        clienteRepository.save(cliente);
+        repository.save(cliente);
     }
 
     private void apply(final long version, final DescuentosRecuperadosEvent event) {
-        final var cliente = clienteRepository.load(event.getAggregateRootId()).orElseThrow();
+        final var cliente = repository.load(event.getAggregateRootId()).orElseThrow();
 
         cliente.setVersion(version);
         cliente.getDescuentos().stream()
                 .filter(d -> event.getDescuentos().contains(d.getId()))
                 .forEach(d -> d.setEnReserva(null));
 
-        clienteRepository.save(cliente);
+        repository.save(cliente);
     }
 }

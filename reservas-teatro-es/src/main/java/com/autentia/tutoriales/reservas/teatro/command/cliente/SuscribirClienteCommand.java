@@ -5,7 +5,6 @@ import com.autentia.tutoriales.reservas.teatro.event.cliente.ClienteSuscritoEven
 import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentoConcedidoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -24,8 +23,7 @@ public class SuscribirClienteCommand implements Command<String> {
 
     @Override
     public void execute(final EventPublisher<String> eventPublisher) {
-        final var repository = RepositoryFactory.getRepository(Cliente.class);
-        final var clienteOpcional = repository.load(aggregateRootId);
+        final var clienteOpcional = ClienteCommandSupport.getRepository().load(aggregateRootId);
         final boolean suscrito = clienteOpcional.map(Cliente::isSuscrito).orElse(false);
         final long version = clienteOpcional.map(Cliente::getVersion).orElse(0L);
 

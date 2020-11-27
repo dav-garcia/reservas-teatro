@@ -5,7 +5,6 @@ import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.util.Set;
@@ -21,8 +20,7 @@ public class CrearReservaCommand implements Command<UUID> {
 
     @Override
     public void execute(EventPublisher<UUID> eventPublisher) {
-        final var repository = RepositoryFactory.getRepository(Reserva.class);
-        if (repository.load(aggregateRootId).isPresent()) {
+        if (ReservaCommandSupport.getRepository().load(aggregateRootId).isPresent()) {
             throw new CommandNotValidException("Reserva ya existe");
         }
 

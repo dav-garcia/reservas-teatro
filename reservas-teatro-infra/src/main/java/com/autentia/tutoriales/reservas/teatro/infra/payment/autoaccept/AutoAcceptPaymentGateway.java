@@ -14,8 +14,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class AutoAcceptPaymentGateway implements PaymentGateway {
 
-    private final Map<String, Status> payments = new HashMap<>();
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+    private final Map<String, Status> payments;
+    private final ScheduledExecutorService executorService;
+
+    public AutoAcceptPaymentGateway() {
+        payments = new HashMap<>();
+        executorService = Executors.newScheduledThreadPool(2);
+    }
 
     @Override
     public String initiatePayment(final String email, final String description, final int value) {

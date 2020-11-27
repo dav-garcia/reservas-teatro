@@ -4,7 +4,6 @@ import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoConfirmadoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
-import com.autentia.tutoriales.reservas.teatro.infra.repository.RepositoryFactory;
 import lombok.Value;
 
 import java.util.UUID;
@@ -17,8 +16,7 @@ public class ConfirmarPagoCommand implements Command<UUID> {
 
     @Override
     public void execute(final EventPublisher<UUID> eventPublisher) {
-        final var repository = RepositoryFactory.getRepository(Pago.class);
-        final var pago = repository.load(aggregateRootId)
+        final var pago = PagoCommandSupport.getRepository().load(aggregateRootId)
                 .orElseThrow(() -> new CommandNotValidException("El pago ya se ha confirmado"));
 
         eventPublisher.tryPublish(pago.getVersion(), new PagoConfirmadoEvent(aggregateRootId, reserva));
