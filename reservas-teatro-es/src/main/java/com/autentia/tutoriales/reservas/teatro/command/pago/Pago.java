@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,8 +17,5 @@ public class Pago implements AggregateRoot<UUID> {
 
     private final UUID id;
     private long version;
-    private final UUID reserva;
-    private final String cliente;
-    private List<Concepto> conceptos;
     private String codigoPago;
 }

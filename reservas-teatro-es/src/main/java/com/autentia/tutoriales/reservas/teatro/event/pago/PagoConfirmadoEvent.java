@@ -9,5 +9,4 @@ import java.util.UUID;
 public class PagoConfirmadoEvent implements Event<UUID> {
 
     UUID aggregateRootId;
-    UUID reserva;
 }

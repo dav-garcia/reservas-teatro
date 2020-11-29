@@ -2,13 +2,13 @@ package com.autentia.tutoriales.reservas.teatro.infra;
 
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
+import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandContext;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
 /**
  * Un comando para cambiar el estado de una agregada
  */
-public interface Command<U> {
+public interface Command<C extends CommandContext<T, U>, T extends AggregateRoot<U>, U> {
 
     /**
      * @return identificador de la instancia de agregada sobre la que se ejecuta el comando
@@ -23,8 +23,8 @@ public interface Command<U> {
      * {@link CommandDispatcher} puede intentar repetir el comando, así que su ejecución
      * debe ser idempotente
      *
-     * @param eventPublisher Stream para publicar eventos
+     * @param context Contexto de ejecución que da acceso a los servicios requeridos por el comando
      * @throws CommandNotValidException Si el comando no es válido
      */
-    void execute(final EventPublisher<U> eventPublisher);
+    void execute(final C context);
 }

@@ -3,7 +3,7 @@ package com.autentia.tutoriales.reservas.teatro.command.pago;
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
-import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
+import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGateway;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Value
 @RequiredArgsConstructor
-public class ProponerPagoIdempotentCommand implements Command<UUID> {
+public class ProponerPagoIdempotentCommand implements Command<PagoCommandContext, Pago, UUID> {
 
     UUID aggregateRootId;
     UUID reserva;
@@ -24,30 +24,31 @@ public class ProponerPagoIdempotentCommand implements Command<UUID> {
     String codigoPago;
 
     @Override
-    public void execute(final EventPublisher<UUID> eventPublisher) {
-        if (PagoCommandSupport.getRepository().load(aggregateRootId).isPresent()) {
+    public void execute(final PagoCommandContext context) {
+        if (context.getRepository().load(aggregateRootId).isPresent()) {
             if (codigoPago != null) {
-                cancelarPago(codigoPago);
+                cancelarPago(context.getPaymentGateway(), codigoPago);
             }
             throw new CommandNotValidException("El pago ya ha sido propuesto");
         }
 
         if (codigoPago == null) { // Idempotencia con el proveedor externo en caso de repetición
-            codigoPago = iniciarPago();
+            codigoPago = iniciarPago(context.getPaymentGateway());
         }
-        eventPublisher.tryPublish(0L, new PagoPropuestoEvent(aggregateRootId, reserva, cliente, conceptos, codigoPago));
+        context.getEventPublisher().tryPublish(0L,
+                new PagoPropuestoEvent(aggregateRootId, reserva, cliente, conceptos, codigoPago));
     }
 
-    private String iniciarPago() {
+    private String iniciarPago(final PaymentGateway paymentGateway) {
         final var descripcion = "Reserva " + reserva;
         final var valor = conceptos.stream()
                 .mapToInt(Concepto::getPrecio)
                 .sum();
 
-        return PagoCommandSupport.getPaymentGateway().initiatePayment(cliente, descripcion, valor);
+        return paymentGateway.initiatePayment(cliente, descripcion, valor);
     }
 
-    private void cancelarPago(final String codigoPago) {
-        PagoCommandSupport.getPaymentGateway().cancelPayment(codigoPago);
+    private void cancelarPago(final PaymentGateway paymentGateway, final String codigoPago) {
+        paymentGateway.cancelPayment(codigoPago);
     }
 }

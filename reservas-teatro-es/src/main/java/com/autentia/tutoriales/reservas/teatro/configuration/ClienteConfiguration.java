@@ -1,11 +1,10 @@
 package com.autentia.tutoriales.reservas.teatro.configuration;
 
 import com.autentia.tutoriales.reservas.teatro.command.cliente.Cliente;
-import com.autentia.tutoriales.reservas.teatro.command.cliente.ClienteCommandSupport;
+import com.autentia.tutoriales.reservas.teatro.command.cliente.ClienteCommandContext;
 import com.autentia.tutoriales.reservas.teatro.command.cliente.ClienteEventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.occ.OccCommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.inmemory.InMemoryEventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
@@ -21,21 +20,27 @@ public class ClienteConfiguration {
     }
 
     @Bean
-    public ClienteEventConsumer clienteEventConsumer(final Repository<Cliente, String> clienteRepository) {
-        return new ClienteEventConsumer(clienteRepository);
+    public InMemoryEventPublisher<String> clientePublisher() {
+        return new InMemoryEventPublisher<>();
     }
 
     @Bean
-    public EventPublisher<String> clientePublisher(final ClienteEventConsumer clienteEventConsumer) {
-        final var result = new InMemoryEventPublisher<String>();
-        result.registerEventConsumer(clienteEventConsumer);
+    public ClienteEventConsumer clienteEventConsumer(final Repository<Cliente, String> clienteRepository,
+                                                     final InMemoryEventPublisher<String> clientePublisher) {
+        final var result = new ClienteEventConsumer(clienteRepository);
+        clientePublisher.registerEventConsumer(result);
         return result;
     }
 
     @Bean
-    public CommandDispatcher<String> clienteDispatcher(final Repository<Cliente, String> clienteRepository,
-                                                       final EventPublisher<String> clientePublisher) {
-        ClienteCommandSupport.setup(clienteRepository);
-        return new OccCommandDispatcher<>(clientePublisher);
+    public ClienteCommandContext clienteCommandContext(final Repository<Cliente, String> clienteRepository,
+                                                       final InMemoryEventPublisher<String> clientePublisher) {
+        return new ClienteCommandContext(clienteRepository, clientePublisher);
+    }
+
+    @Bean
+    public CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher(
+            final ClienteCommandContext context) {
+        return new OccCommandDispatcher<>(context);
     }
 }

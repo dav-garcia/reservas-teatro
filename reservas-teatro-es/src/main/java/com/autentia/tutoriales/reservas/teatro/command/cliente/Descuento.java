@@ -1,5 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.cliente;
 
+import com.autentia.tutoriales.reservas.teatro.infra.Entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(builderClassName = "Builder")
-public class Descuento {
+public class Descuento implements Entity<UUID> {
 
     private final UUID id;
     private final String descripcion;

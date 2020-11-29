@@ -6,6 +6,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,10 @@ public class InMemoryEventPublisher<U> implements EventPublisher<U> {
     public InMemoryEventPublisher() {
         eventConsumers = new HashSet<>();
         currentVersions = new ConcurrentHashMap<>();
+    }
+
+    public Set<EventConsumer<U>> getEventConsumers() {
+        return Collections.unmodifiableSet(eventConsumers);
     }
 
     public void registerEventConsumer(final EventConsumer<U> eventConsumer) {

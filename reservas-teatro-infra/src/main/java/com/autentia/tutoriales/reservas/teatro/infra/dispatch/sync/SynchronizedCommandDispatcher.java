@@ -2,22 +2,28 @@ package com.autentia.tutoriales.reservas.teatro.infra.dispatch.sync;
 
 import com.autentia.tutoriales.reservas.teatro.error.CommandException;
 import com.autentia.tutoriales.reservas.teatro.error.InconsistentStateException;
+import com.autentia.tutoriales.reservas.teatro.infra.AggregateRoot;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
+import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandContext;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
-import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 
-public class SynchronizedCommandDispatcher<U> implements CommandDispatcher<U> {
+public class SynchronizedCommandDispatcher<C extends CommandContext<T, U>, T extends AggregateRoot<U>, U>
+        implements CommandDispatcher<C, T, U> {
 
-    private final EventPublisher<U> eventPublisher;
+    private final C context;
 
-    public SynchronizedCommandDispatcher(final EventPublisher<U> eventPublisher) {
-        this.eventPublisher = eventPublisher;
+    public SynchronizedCommandDispatcher(final C context) {
+        this.context = context;
+    }
+
+    public C getContext() {
+        return context;
     }
 
     @Override
-    public synchronized void dispatch(final Command<U> command) {
+    public synchronized void dispatch(final Command<C, T, U> command) {
         try {
-            command.execute(eventPublisher);
+            command.execute(context);
         } catch (InconsistentStateException e) {
             throw new CommandException("Excepción imposible en entorno singleton", e);
         }

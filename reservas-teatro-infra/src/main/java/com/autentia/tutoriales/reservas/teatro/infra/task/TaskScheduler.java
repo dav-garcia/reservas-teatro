@@ -22,7 +22,14 @@ public class TaskScheduler implements AutoCloseable {
 
     public void scheduleTask(final String type, final UUID id, final Runnable task, final int startAfterSeconds) {
         final var key = buildKey(type, id);
-        tasks.computeIfAbsent(key, i -> scheduler.schedule(task, Instant.now().plusSeconds(startAfterSeconds)));
+        tasks.computeIfAbsent(key, k -> scheduler.schedule(wrap(k, task), Instant.now().plusSeconds(startAfterSeconds)));
+    }
+
+    private Runnable wrap(final String key, final Runnable task) {
+        return () -> {
+            tasks.remove(key);
+            task.run();
+        };
     }
 
     public void cancelTask(final String type, final UUID id) {
