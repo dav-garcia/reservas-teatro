@@ -7,7 +7,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.occ.OccCommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.inmemory.InMemoryEventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGateway;
-import com.autentia.tutoriales.reservas.teatro.infra.payment.autoaccept.AutoAcceptPaymentGateway;
+import com.autentia.tutoriales.reservas.teatro.infra.payment.autoaccept.InMemoryPaymentGateway;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class PagoConfiguration {
 
     @Bean
     public PaymentGateway paymentGateway() {
-        return new AutoAcceptPaymentGateway();
+        return new InMemoryPaymentGateway();
     }
 
     @Bean

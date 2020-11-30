@@ -33,8 +33,6 @@ public class RepresentacionEventConsumer implements EventConsumer<UUID> {
         final var representacion = Representacion.builder()
                 .id(event.getAggregateRootId())
                 .version(version)
-                .cuando(event.getCuando())
-                .donde(event.getDonde())
                 .butacasLibres(new HashSet<>(event.getDonde().getButacas()))
                 .build();
 

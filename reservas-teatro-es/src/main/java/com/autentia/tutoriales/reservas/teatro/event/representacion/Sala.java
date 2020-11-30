@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.command.representacion;
+package com.autentia.tutoriales.reservas.teatro.event.representacion;
 
 import lombok.Value;
 

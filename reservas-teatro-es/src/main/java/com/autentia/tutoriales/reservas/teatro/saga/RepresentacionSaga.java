@@ -12,16 +12,15 @@ import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class RepresentacionSaga implements EventConsumer<UUID> {
 
-    private final Repository<EstadoSaga, UUID> repository;
+    private final Repository<EstadoProceso, UUID> repository;
     private final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher;
     private final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher;
 
-    public RepresentacionSaga(final Repository<EstadoSaga, UUID> repository,
+    public RepresentacionSaga(final Repository<EstadoProceso, UUID> repository,
                               final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher,
                               final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher) {
         this.repository = repository;
@@ -37,20 +36,19 @@ public class RepresentacionSaga implements EventConsumer<UUID> {
     }
 
     private void process(final ButacasSeleccionadasEvent event) {
-        crearEstadoSaga(event);
+        crearEstado(event);
 
         clienteDispatcher.dispatch(new RegistrarEmailCommand(event.getEmail()));
         reservaDispatcher.dispatch(new CrearReservaCommand(event.getParaReserva(),
                 event.getAggregateRootId(), event.getButacas(), event.getEmail()));
     }
 
-    private void crearEstadoSaga(final ButacasSeleccionadasEvent event) {
-        repository.save(EstadoSaga.builder()
+    private void crearEstado(final ButacasSeleccionadasEvent event) {
+        repository.save(EstadoProceso.builder()
                 .id(event.getParaReserva())
                 .representacion(event.getAggregateRootId())
                 .cliente(event.getEmail())
                 .butacas(event.getButacas())
-                .descuentos(new ArrayList<>(2))
                 .build());
     }
 }

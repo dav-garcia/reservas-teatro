@@ -5,35 +5,25 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Implementación que acepta los pagos automáticamente después de 1 segundo
  */
-public class AutoAcceptPaymentGateway implements PaymentGateway {
+public class InMemoryPaymentGateway implements PaymentGateway {
+
+    private static final String ERROR_MESSAGE = "Código de pago desconocido";
 
     private final Map<String, Status> payments;
-    private final ScheduledExecutorService executorService;
 
-    public AutoAcceptPaymentGateway() {
+    public InMemoryPaymentGateway() {
         payments = new HashMap<>();
-        executorService = Executors.newScheduledThreadPool(2);
     }
 
     @Override
     public String initiatePayment(final String email, final String description, final int value) {
         final var paymentId = RandomStringUtils.randomAlphanumeric(8);
         payments.put(paymentId, Status.PENDING);
-        executorService.schedule(() -> setAccepted(paymentId), 1, TimeUnit.SECONDS);
         return paymentId;
-    }
-
-    private void setAccepted(String paymentId) {
-        if (payments.containsKey(paymentId)) {
-            payments.put(paymentId, Status.ACCEPTED);
-        }
     }
 
     @Override
@@ -41,7 +31,7 @@ public class AutoAcceptPaymentGateway implements PaymentGateway {
         if (payments.containsKey(paymentId)) {
             return payments.get(paymentId);
         }
-        throw new IllegalArgumentException("Código de pago desconocido");
+        throw new IllegalArgumentException(ERROR_MESSAGE);
     }
 
     @Override
@@ -49,6 +39,14 @@ public class AutoAcceptPaymentGateway implements PaymentGateway {
         if (payments.containsKey(paymentId)) {
             return payments.replace(paymentId, Status.PENDING, Status.CANCELLED);
         }
-        throw new IllegalArgumentException("Código de pago desconocido");
+        throw new IllegalArgumentException(ERROR_MESSAGE);
+    }
+
+    public void setAccepted(final String paymentId) {
+        if (payments.containsKey(paymentId)) {
+            payments.put(paymentId, Status.ACCEPTED);
+        } else {
+            throw new IllegalArgumentException(ERROR_MESSAGE);
+        }
     }
 }

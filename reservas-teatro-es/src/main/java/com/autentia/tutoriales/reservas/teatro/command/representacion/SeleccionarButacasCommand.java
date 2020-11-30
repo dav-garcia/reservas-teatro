@@ -1,6 +1,7 @@
 package com.autentia.tutoriales.reservas.teatro.command.representacion;
 
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
+import com.autentia.tutoriales.reservas.teatro.event.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.event.representacion.ButacasSeleccionadasEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import lombok.Value;

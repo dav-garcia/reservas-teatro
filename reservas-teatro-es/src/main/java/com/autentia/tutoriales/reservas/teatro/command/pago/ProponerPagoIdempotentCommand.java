@@ -1,6 +1,7 @@
 package com.autentia.tutoriales.reservas.teatro.command.pago;
 
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
+import com.autentia.tutoriales.reservas.teatro.event.pago.Concepto;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;
 import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGateway;

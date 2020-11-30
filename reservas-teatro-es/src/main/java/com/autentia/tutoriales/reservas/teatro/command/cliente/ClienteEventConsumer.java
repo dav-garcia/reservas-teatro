@@ -54,7 +54,6 @@ public class ClienteEventConsumer implements EventConsumer<String> {
 
         cliente.setVersion(version);
         cliente.setSuscrito(true);
-        cliente.setNombre(event.getNombre());
 
         repository.save(cliente);
     }

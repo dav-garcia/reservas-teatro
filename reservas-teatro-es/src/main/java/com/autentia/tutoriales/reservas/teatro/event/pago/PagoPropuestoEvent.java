@@ -1,6 +1,5 @@
 package com.autentia.tutoriales.reservas.teatro.event.pago;
 
-import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import lombok.Value;
 

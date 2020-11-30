@@ -7,7 +7,7 @@ import com.autentia.tutoriales.reservas.teatro.command.cliente.RecuperarDescuent
 import com.autentia.tutoriales.reservas.teatro.command.pago.AnularPagoCommand;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Pago;
 import com.autentia.tutoriales.reservas.teatro.command.pago.PagoCommandContext;
-import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
+import com.autentia.tutoriales.reservas.teatro.event.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.LiberarButacasCommand;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.Representacion;
 import com.autentia.tutoriales.reservas.teatro.command.representacion.RepresentacionCommandContext;
@@ -30,9 +30,9 @@ import java.util.UUID;
 public class ReservaSaga implements EventConsumer<UUID> {
 
     private static final String TASK_TYPE = "timeout";
-    private static final int DEFAULT_TIMEOUT = 30;
+    private static final int DEFAULT_TIMEOUT = 10 * 60;
 
-    private final Repository<EstadoSaga, UUID> repository;
+    private final Repository<EstadoProceso, UUID> repository;
     private final CommandDispatcher<RepresentacionCommandContext, Representacion, UUID> representacionDispatcher;
     private final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher;
     private final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher;
@@ -41,7 +41,7 @@ public class ReservaSaga implements EventConsumer<UUID> {
 
     private int timeout;
 
-    public ReservaSaga(final Repository<EstadoSaga, UUID> repository,
+    public ReservaSaga(final Repository<EstadoProceso, UUID> repository,
                        final CommandDispatcher<RepresentacionCommandContext, Representacion, UUID> representacionDispatcher,
                        final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher,
                        final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher,
@@ -115,23 +115,22 @@ public class ReservaSaga implements EventConsumer<UUID> {
         taskScheduler.cancelTask(TASK_TYPE, event.getAggregateRootId());
 
         repository.delete(event.getAggregateRootId());
-        // TODO: Borrar descuentos aplicados también
     }
 
-    private boolean anularPago(final EstadoSaga estadoSaga) {
-        if (estadoSaga.getPago() == null) {
+    private boolean anularPago(final EstadoProceso estado) {
+        if (estado.getPago() == null) {
             return false;
         }
 
-        pagoDispatcher.dispatch(new AnularPagoCommand(estadoSaga.getPago()));
+        pagoDispatcher.dispatch(new AnularPagoCommand(estado.getPago()));
         return true;
     }
 
-    private void recuperarDescuentos(final EstadoSaga estado) {
+    private void recuperarDescuentos(final EstadoProceso estado) {
         clienteDispatcher.dispatch(new RecuperarDescuentosCommand(estado.getCliente(), estado.getId()));
     }
 
-    private void liberarButacas(final EstadoSaga estadoSaga) {
-        representacionDispatcher.dispatch(new LiberarButacasCommand(estadoSaga.getRepresentacion(), estadoSaga.getButacas()));
+    private void liberarButacas(final EstadoProceso estado) {
+        representacionDispatcher.dispatch(new LiberarButacasCommand(estado.getRepresentacion(), estado.getButacas()));
     }
 }

@@ -1,6 +1,5 @@
 package com.autentia.tutoriales.reservas.teatro.event.representacion;
 
-import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import lombok.Value;
 

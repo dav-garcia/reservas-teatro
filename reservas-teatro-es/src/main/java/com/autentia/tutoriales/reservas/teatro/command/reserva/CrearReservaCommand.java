@@ -1,6 +1,6 @@
 package com.autentia.tutoriales.reservas.teatro.command.reserva;
 
-import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
+import com.autentia.tutoriales.reservas.teatro.event.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.reserva.ReservaCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Command;

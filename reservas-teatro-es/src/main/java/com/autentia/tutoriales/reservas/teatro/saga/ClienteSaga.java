@@ -1,11 +1,11 @@
 package com.autentia.tutoriales.reservas.teatro.saga;
 
 import com.autentia.tutoriales.reservas.teatro.command.cliente.Descuento;
-import com.autentia.tutoriales.reservas.teatro.command.pago.Concepto;
+import com.autentia.tutoriales.reservas.teatro.event.pago.Concepto;
 import com.autentia.tutoriales.reservas.teatro.command.pago.Pago;
 import com.autentia.tutoriales.reservas.teatro.command.pago.PagoCommandContext;
 import com.autentia.tutoriales.reservas.teatro.command.pago.ProponerPagoIdempotentCommand;
-import com.autentia.tutoriales.reservas.teatro.command.representacion.Butaca;
+import com.autentia.tutoriales.reservas.teatro.event.representacion.Butaca;
 import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentoConcedidoEvent;
 import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentosAplicadosEvent;
 import com.autentia.tutoriales.reservas.teatro.event.cliente.DescuentosRecuperadosEvent;
@@ -19,11 +19,11 @@ import java.util.UUID;
 
 public class ClienteSaga implements EventConsumer<String> {
 
-    private final Repository<EstadoSaga, UUID> repository;
+    private final Repository<EstadoProceso, UUID> repository;
     private final Repository<Descuento, UUID> descuentoRepository;
     private final CommandDispatcher<PagoCommandContext, Pago, UUID> pagoDispatcher;
 
-    public ClienteSaga(final Repository<EstadoSaga, UUID> repository,
+    public ClienteSaga(final Repository<EstadoProceso, UUID> repository,
                        final Repository<Descuento, UUID> descuentoRepository,
                        final CommandDispatcher<PagoCommandContext, Pago, UUID> pagoDispatcher) {
         this.repository = repository;

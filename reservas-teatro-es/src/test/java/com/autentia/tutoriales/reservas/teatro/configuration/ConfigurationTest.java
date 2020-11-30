@@ -19,51 +19,29 @@ public class ConfigurationTest {
     @Test
     public void givenFullConfigurationThenDependenciesInjected() {
         contextRunner.withUserConfiguration(
-                ClienteConfiguration.class,
-                PagoConfiguration.class,
                 RepresentacionConfiguration.class,
                 ReservaConfiguration.class,
-                SagaConfiguration.class).run(context -> {
-            assertClientePublisher(context);
-            assertClienteDispatcher(context);
-            assertPagoPublisher(context);
-            assertPagoDispatcher(context);
+                ClienteConfiguration.class,
+                PagoConfiguration.class,
+                SagaConfiguration.class,
+                HistoricoConfiguration.class).run(context -> {
             assertRepresentacionPublisher(context);
             assertRepresentacionDispatcher(context);
             assertReservaPublisher(context);
             assertReservaDispatcher(context);
+            assertClientePublisher(context);
+            assertClienteDispatcher(context);
+            assertPagoPublisher(context);
+            assertPagoDispatcher(context);
         });
-    }
-
-    private void assertClientePublisher(final AssertableApplicationContext context) {
-        assertThat(context).getBean("clientePublisher")
-                .hasFieldOrPropertyWithValue("eventConsumers", Set.of(
-                        context.getBean("clienteEventConsumer"),
-                        context.getBean("clienteSaga")));
-    }
-
-    private void assertClienteDispatcher(final AssertableApplicationContext context) {
-        assertThat(context).getBean("clienteDispatcher")
-                .extracting("context").isOfAnyClassIn(ClienteCommandContext.class);
-    }
-
-    private void assertPagoPublisher(final AssertableApplicationContext context) {
-        assertThat(context).getBean("pagoPublisher")
-                .hasFieldOrPropertyWithValue("eventConsumers", Set.of(
-                        context.getBean("pagoEventConsumer"),
-                        context.getBean("pagoSaga")));
-    }
-
-    private void assertPagoDispatcher(final AssertableApplicationContext context) {
-        assertThat(context).getBean("pagoDispatcher")
-                .extracting("context").isOfAnyClassIn(PagoCommandContext.class);
     }
 
     private void assertRepresentacionPublisher(final AssertableApplicationContext context) {
         assertThat(context).getBean("representacionPublisher")
                 .hasFieldOrPropertyWithValue("eventConsumers", Set.of(
                         context.getBean("representacionEventConsumer"),
-                        context.getBean("representacionSaga")));
+                        context.getBean("representacionSaga"),
+                        context.getBean("historicoEventConsumer")));
     }
 
     private void assertRepresentacionDispatcher(final AssertableApplicationContext context) {
@@ -75,11 +53,38 @@ public class ConfigurationTest {
         assertThat(context).getBean("reservaPublisher")
                 .hasFieldOrPropertyWithValue("eventConsumers", Set.of(
                         context.getBean("reservaEventConsumer"),
-                        context.getBean("reservaSaga")));
+                        context.getBean("reservaSaga"),
+                        context.getBean("historicoEventConsumer")));
     }
 
     private void assertReservaDispatcher(final AssertableApplicationContext context) {
         assertThat(context).getBean("reservaDispatcher")
                 .extracting("context").isOfAnyClassIn(ReservaCommandContext.class);
+    }
+
+    private void assertClientePublisher(final AssertableApplicationContext context) {
+        assertThat(context).getBean("clientePublisher")
+                .hasFieldOrPropertyWithValue("eventConsumers", Set.of(
+                        context.getBean("clienteEventConsumer"),
+                        context.getBean("clienteSaga"),
+                        context.getBean("historicoEventConsumer")));
+    }
+
+    private void assertClienteDispatcher(final AssertableApplicationContext context) {
+        assertThat(context).getBean("clienteDispatcher")
+                .extracting("context").isOfAnyClassIn(ClienteCommandContext.class);
+    }
+
+    private void assertPagoPublisher(final AssertableApplicationContext context) {
+        assertThat(context).getBean("pagoPublisher")
+                .hasFieldOrPropertyWithValue("eventConsumers", Set.of(
+                        context.getBean("pagoEventConsumer"),
+                        context.getBean("pagoSaga"),
+                        context.getBean("historicoEventConsumer")));
+    }
+
+    private void assertPagoDispatcher(final AssertableApplicationContext context) {
+        assertThat(context).getBean("pagoDispatcher")
+                .extracting("context").isOfAnyClassIn(PagoCommandContext.class);
     }
 }

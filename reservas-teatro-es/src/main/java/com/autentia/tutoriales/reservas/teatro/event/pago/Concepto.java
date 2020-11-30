@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.command.pago;
+package com.autentia.tutoriales.reservas.teatro.event.pago;
 
 import lombok.Value;
 

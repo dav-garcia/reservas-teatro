@@ -5,6 +5,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.Event;
 /**
  * Consumidor de eventos de una agregada
  */
+@FunctionalInterface
 public interface EventConsumer<U> {
 
     /**

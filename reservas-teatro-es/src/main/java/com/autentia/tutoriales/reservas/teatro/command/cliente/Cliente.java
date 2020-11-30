@@ -24,7 +24,6 @@ public class Cliente implements AggregateRoot<String> {
     private final String id;
     private long version;
     private boolean suscrito;
-    private String nombre;
     private final List<Descuento> descuentos;
 
     @NonNull

@@ -13,6 +13,13 @@ import java.util.function.Predicate;
 public interface Repository<T extends Entity<U>, U> {
 
     /**
+     * Almacena una instancia (nueva o modificada)
+     *
+     * @param instance Instancia a guardar
+     */
+    void save(final T instance);
+
+    /**
      * Carga una instancia, si existe
      *
      * @param id Identificador
@@ -22,11 +29,13 @@ public interface Repository<T extends Entity<U>, U> {
     Optional<T> load(final U id);
 
     /**
-     * Almacena una instancia (nueva o modificada)
+     * Encuentra las instancias que cumplen un filtro
      *
-     * @param instance Instancia a guardar
+     * @param filter filtro que deben cumplir las instancias
+     * @return instancias que cumplen el filtro
      */
-    void save(final T instance);
+    @NonNull
+    List<T> find(final Predicate<T> filter);
 
     /**
      * Elimina una instancia
@@ -34,6 +43,4 @@ public interface Repository<T extends Entity<U>, U> {
      * @param id Identificador
      */
     void delete(final U id);
-
-    List<T> find(final Predicate<T> filter);
 }

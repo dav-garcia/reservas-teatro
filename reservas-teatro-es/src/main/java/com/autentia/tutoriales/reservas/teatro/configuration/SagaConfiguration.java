@@ -15,7 +15,7 @@ import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.inmemory.InMemoryRepository;
 import com.autentia.tutoriales.reservas.teatro.infra.task.TaskScheduler;
 import com.autentia.tutoriales.reservas.teatro.saga.ClienteSaga;
-import com.autentia.tutoriales.reservas.teatro.saga.EstadoSaga;
+import com.autentia.tutoriales.reservas.teatro.saga.EstadoProceso;
 import com.autentia.tutoriales.reservas.teatro.saga.PagoSaga;
 import com.autentia.tutoriales.reservas.teatro.saga.RepresentacionSaga;
 import com.autentia.tutoriales.reservas.teatro.saga.ReservaSaga;
@@ -33,7 +33,7 @@ public class SagaConfiguration {
     }
 
     @Bean
-    public Repository<EstadoSaga, UUID> estadoSagaRepository() {
+    public Repository<EstadoProceso, UUID> estadoProcesoRepository() {
         return new InMemoryRepository<>();
     }
 
@@ -44,7 +44,7 @@ public class SagaConfiguration {
 
     @Bean
     public RepresentacionSaga representacionSaga(
-            final Repository<EstadoSaga, UUID> repository,
+            final Repository<EstadoProceso, UUID> repository,
             final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher,
             final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher,
             final InMemoryEventPublisher<UUID> representacionPublisher) {
@@ -55,7 +55,7 @@ public class SagaConfiguration {
 
     @Bean
     public ReservaSaga reservaSaga(
-            final Repository<EstadoSaga, UUID> repository,
+            final Repository<EstadoProceso, UUID> repository,
             final CommandDispatcher<RepresentacionCommandContext, Representacion, UUID> representacionDispatcher,
             final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher,
             final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher,
@@ -70,7 +70,7 @@ public class SagaConfiguration {
 
     @Bean
     public ClienteSaga clienteSaga(
-            final Repository<EstadoSaga, UUID> repository,
+            final Repository<EstadoProceso, UUID> repository,
             final Repository<Descuento, UUID> descuentoRepository,
             final CommandDispatcher<PagoCommandContext, Pago, UUID> pagoDispatcher,
             final InMemoryEventPublisher<String> clientePublisher) {
@@ -81,7 +81,7 @@ public class SagaConfiguration {
 
     @Bean
     public PagoSaga pagoSaga(
-            final Repository<EstadoSaga, UUID> repository,
+            final Repository<EstadoProceso, UUID> repository,
             final CommandDispatcher<RepresentacionCommandContext, Representacion, UUID> representacionDispatcher,
             final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher,
             final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher,

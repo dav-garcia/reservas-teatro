@@ -11,6 +11,7 @@ import com.autentia.tutoriales.reservas.teatro.command.reserva.Reserva;
 import com.autentia.tutoriales.reservas.teatro.command.reserva.ReservaCommandContext;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoAnuladoEvent;
 import com.autentia.tutoriales.reservas.teatro.event.pago.PagoConfirmadoEvent;
+import com.autentia.tutoriales.reservas.teatro.event.pago.PagoPropuestoEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.Event;
 import com.autentia.tutoriales.reservas.teatro.infra.dispatch.CommandDispatcher;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventConsumer;
@@ -21,12 +22,12 @@ import java.util.UUID;
 
 public class PagoSaga implements EventConsumer<UUID> {
 
-    private final Repository<EstadoSaga, UUID> repository;
+    private final Repository<EstadoProceso, UUID> repository;
     private final CommandDispatcher<RepresentacionCommandContext, Representacion, UUID> representacionDispatcher;
     private final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher;
     private final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher;
 
-    public PagoSaga(final Repository<EstadoSaga, UUID> repository,
+    public PagoSaga(final Repository<EstadoProceso, UUID> repository,
                     final CommandDispatcher<RepresentacionCommandContext, Representacion, UUID> representacionDispatcher,
                     final CommandDispatcher<ReservaCommandContext, Reserva, UUID> reservaDispatcher,
                     final CommandDispatcher<ClienteCommandContext, Cliente, String> clienteDispatcher) {
@@ -38,11 +39,19 @@ public class PagoSaga implements EventConsumer<UUID> {
 
     @Override
     public void consume(final long version, final Event<UUID> event) {
-        if (event instanceof PagoConfirmadoEvent) {
+        if (event instanceof PagoPropuestoEvent) {
+            process((PagoPropuestoEvent) event);
+        } else if (event instanceof PagoConfirmadoEvent) {
             process((PagoConfirmadoEvent) event);
         } else if (event instanceof PagoAnuladoEvent) {
             process((PagoAnuladoEvent) event);
         }
+    }
+
+    private void process(final PagoPropuestoEvent event) {
+        final var estado = repository.load(event.getReserva()).orElseThrow();
+        estado.setPago(event.getAggregateRootId());
+        repository.save(estado);
     }
 
     private void process(final PagoConfirmadoEvent event) {
@@ -55,16 +64,18 @@ public class PagoSaga implements EventConsumer<UUID> {
     private void process(final PagoAnuladoEvent event) {
         final var estado = repository.find(e -> Objects.equals(e.getPago(), event.getAggregateRootId()))
                 .get(0);
+        estado.setPago(null);
+        repository.save(estado);
 
         recuperarDescuentos(estado);
         liberarButacas(estado);
     }
 
-    private void recuperarDescuentos(final EstadoSaga estado) {
+    private void recuperarDescuentos(final EstadoProceso estado) {
         clienteDispatcher.dispatch(new RecuperarDescuentosCommand(estado.getCliente(), estado.getId()));
     }
 
-    private void liberarButacas(final EstadoSaga estadoSaga) {
-        representacionDispatcher.dispatch(new LiberarButacasCommand(estadoSaga.getRepresentacion(), estadoSaga.getButacas()));
+    private void liberarButacas(final EstadoProceso estado) {
+        representacionDispatcher.dispatch(new LiberarButacasCommand(estado.getRepresentacion(), estado.getButacas()));
     }
 }
