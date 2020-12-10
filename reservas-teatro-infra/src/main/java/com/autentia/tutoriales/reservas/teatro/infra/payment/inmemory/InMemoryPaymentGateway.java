@@ -1,4 +1,4 @@
-package com.autentia.tutoriales.reservas.teatro.infra.payment.autoaccept;
+package com.autentia.tutoriales.reservas.teatro.infra.payment.inmemory;
 
 import com.autentia.tutoriales.reservas.teatro.infra.payment.PaymentGateway;
 import org.apache.commons.lang3.RandomStringUtils;

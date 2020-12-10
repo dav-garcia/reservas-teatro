@@ -7,26 +7,24 @@ import com.autentia.tutoriales.reservas.teatro.error.CommandNotValidException;
 import com.autentia.tutoriales.reservas.teatro.event.ReservaCreadaEvent;
 import com.autentia.tutoriales.reservas.teatro.infra.event.EventPublisher;
 import com.autentia.tutoriales.reservas.teatro.infra.repository.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.UUID;
 
-@Service
 @Transactional
 public class RepresentacionCommandService {
 
     private final Repository<Representacion, UUID> representacionRepository;
     private final Repository<Reserva, UUID> reservaRepository;
-    private final EventPublisher<UUID> reservaEventPublisher;
+    private final EventPublisher<UUID> reservaPublisher;
 
     public RepresentacionCommandService(final Repository<Representacion, UUID> representacionRepository,
                                         final Repository<Reserva, UUID> reservaRepository,
-                                        final EventPublisher<UUID> reservaEventPublisher) {
+                                        final EventPublisher<UUID> reservaPublisher) {
         this.representacionRepository = representacionRepository;
         this.reservaRepository = reservaRepository;
-        this.reservaEventPublisher = reservaEventPublisher;
+        this.reservaPublisher = reservaPublisher;
     }
 
     public UUID seleccionarButacas(final UUID idRepresentacion, final Set<Butaca> butacas, final String email) {
@@ -47,7 +45,7 @@ public class RepresentacionCommandService {
                 .cliente(email)
                 .build());
         // Double-write!
-        reservaEventPublisher.tryPublish(0L, new ReservaCreadaEvent(idReserva, idRepresentacion, butacas, email));
+        reservaPublisher.tryPublish(0L, new ReservaCreadaEvent(idReserva, idRepresentacion, butacas, email));
 
         return idReserva;
     }
