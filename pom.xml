@@ -19,6 +19,7 @@
         <module>reservas-teatro-infra</module>
         <module>reservas-teatro-ecst</module>
         <module>reservas-teatro-es</module>
+        <module>reservas-teatro-notification</module>
     </modules>
 
     <properties>
