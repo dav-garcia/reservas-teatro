@@ -46,5 +46,5 @@ También en ese módulo están las interfaces básicas de DDD, CQRS y ES: `Aggre
 ## Enlaces
 
 * [Charla](https://youtu.be/gX0DUO171jc)
-* [Diapositivas](https://www.youtube.com/redirect?q=https%3A%2F%2Fspeakerdeck.com%2Fdav_garcia%2Farquitecturas-orientadas-a-eventos-de-las-notificaciones-al-event-sourcing&v=gX0DUO171jc&event=video_description&redir_token=QUFFLUhqbTBCRDU2eHo4X2E5Sm92OWFIVVZFd2tpZmNsZ3xBQ3Jtc0tuUms0TDR3VHdTdm0zb1hnYmhYbXlQZGZrTHgydmRheU1kSFViVzFRaFQtRnJXUmVXXzZmdW9DbUpSeDhtcmk0TGd6dVRxSUVYN0Q3eGtOV05GSE4wcUphQjk2Y1FZX0N3SDJ4WUk1cnlKYkowR1Nkcw%3D%3D)
+* [Diapositivas](https://speakerdeck.com/dav_garcia/arquitecturas-orientadas-a-eventos-de-las-notificaciones-al-event-sourcing)
 * [Comparativa de sistemas de mensajería](https://softwaremill.com/mqperf/)
