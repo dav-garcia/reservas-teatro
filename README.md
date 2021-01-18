@@ -45,6 +45,7 @@ También en ese módulo están las interfaces básicas de DDD, CQRS y ES: `Aggre
 
 ## Enlaces
 
+* [Tutorial](https://www.adictosaltrabajo.com/2021/01/13/implementando-event-sourcing/)
 * [Charla](https://youtu.be/gX0DUO171jc)
 * [Diapositivas](https://speakerdeck.com/dav_garcia/arquitecturas-orientadas-a-eventos-de-las-notificaciones-al-event-sourcing)
 * [Comparativa de sistemas de mensajería](https://softwaremill.com/mqperf/)
