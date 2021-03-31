@@ -1,10 +1,17 @@
 # Arquitecturas orientadas a eventos: de las notificaciones al Event Sourcing
 
-## reservas-teatro
+## Recursos
+
+* [Tutorial](https://www.adictosaltrabajo.com/2021/01/13/implementando-event-sourcing/)
+* [Charla](https://youtu.be/gX0DUO171jc)
+* [Diapositivas](https://speakerdeck.com/dav_garcia/arquitecturas-orientadas-a-eventos-de-las-notificaciones-al-event-sourcing)
+* [Comparativa de sistemas de mensajería](https://softwaremill.com/mqperf/)
+
+## Aplicación reservas-teatro
 
 Ejemplo de aplicación orientada a eventos en el dominio de las reservas de teatro.
  
-Contiene:
+### Contenidos
 
 * Un caso de uso de notificación cuando se concede un descuento.  
   Clase `com.autentia.tutoriales.reservas.teatro.DescuentoService` en el módulo `reservas-teatro-notificacion`.  
@@ -42,10 +49,3 @@ También en ese módulo están las interfaces básicas de DDD, CQRS y ES: `Aggre
 4. Modelo de lectura de ejemplo: un histórico de las reservas hechas por cada cliente.
 5. Saga del proceso de reserva.  
    Contiene consumidores de eventos y el `EstadoProceso` persistente.
-
-## Enlaces
-
-* [Tutorial](https://www.adictosaltrabajo.com/2021/01/13/implementando-event-sourcing/)
-* [Charla](https://youtu.be/gX0DUO171jc)
-* [Diapositivas](https://speakerdeck.com/dav_garcia/arquitecturas-orientadas-a-eventos-de-las-notificaciones-al-event-sourcing)
-* [Comparativa de sistemas de mensajería](https://softwaremill.com/mqperf/)
